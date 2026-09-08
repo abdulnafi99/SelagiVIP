@@ -13,6 +13,8 @@
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
     </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js">
+    </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js">
     </script>
 
@@ -34,8 +36,9 @@
         const app = firebase.initializeApp(firebaseConfig);
         const analytics = firebase.analytics(app);
         const database = firebase.database();
+        const storage = firebase.storage();
 
-        console.log('🔥 Firebase initialized successfully with Realtime Database.');
+        console.log('🔥 Firebase initialized successfully with Realtime Database and Storage.');
     </script>
 
     <!-- Google Fonts -->
@@ -240,6 +243,22 @@
                 font-size: 20px;
             }
         }
+
+        /* Smooth modal transitions */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+        .modal-card.scale-out {
+            transform: scale(0.9) !important;
+            opacity: 0 !important;
+        }
+        .modal-card.scale-in {
+            transform: scale(1) !important;
+            opacity: 1 !important;
+        }
     </style>
 </head>
 <body class="bg-charcoal-950 text-gray-100 font-sans antialiased min-h-screen selection:bg-coffee-400 selection:text-black">
@@ -253,8 +272,8 @@
     </div>
 
     <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-xs rounded-3xl p-6 text-center border border-gold-500/20 transform transition-all duration-300 scale-95 opacity-0" id="confirm-modal-card">
+    <div id="confirm-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-xs rounded-3xl p-6 text-center border border-gold-500/20 modal-card scale-out" id="confirm-modal-card">
             <div class="w-14 h-14 rounded-full bg-coffee-900/60 border border-coffee-400/30 text-coffee-300 flex items-center justify-center mx-auto mb-4 text-2xl">
                 <i id="confirm-modal-icon" class="fa-solid fa-circle-question"></i>
             </div>
@@ -388,7 +407,7 @@
                 </form>
             </div>
 
-            <!-- Staff portal link -->
+            <!-- Staff portal link (kept for admin) -->
             <div class="pb-4 text-center">
                 <button onclick="showStaffLoginModal()" class="text-[11px] text-gray-500 hover:text-coffee-300 transition flex items-center justify-center gap-1.5 mx-auto">
                     <i class="fa-solid fa-user-shield"></i> Staff & Barista Login
@@ -632,13 +651,13 @@
                 </div>
             </nav>
 
-            <!-- STAFF FAB (Floating Action Button) -->
-            <button id="staffFab" class="staff-fab" onclick="handleStaffFabClick()" title="Staff Access">
-                <i class="fa-solid fa-key"></i>
+            <!-- STAFF FAB (Floating Action Button) - now for redeem -->
+            <button id="staffFab" class="staff-fab" onclick="handleRedeemFabClick()" title="Staff Redeem">
+                <i class="fa-solid fa-coins"></i>
             </button>
         </section>
 
-        <!-- STAFF DASHBOARD VIEW -->
+        <!-- STAFF DASHBOARD VIEW (Admin) -->
         <section id="staff-dashboard" class="min-h-screen bg-charcoal-950 p-4 md:p-8 hidden">
             <header class="max-w-7xl mx-auto mb-8 bg-charcoal-900 rounded-3xl p-4 md:p-6 border border-coffee-400/20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -753,14 +772,14 @@
 
     <!-- ===== MODALS ===== -->
 
-    <!-- Staff Login Modal -->
-    <div id="staff-login-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+    <!-- Staff Login Modal (Admin) -->
+    <div id="staff-login-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="staff-login-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-user-shield text-gold-400"></i> Staff Portal Login
                 </h3>
-                <button onclick="closeStaffModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('staff-login-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p class="text-xs text-gray-400 mb-4">Akses terhad untuk kakitangan Selagi Coffee sahaja.</p>
             <form onsubmit="handleStaffLogin(event)" class="space-y-4">
@@ -774,39 +793,63 @@
                 </div>
                 <p class="text-[10px] text-gray-500 italic">* Demo credentials: ID: admin | Pass: Admin24</p>
                 <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeStaffModal()" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="button" onclick="closeModal('staff-login-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
                     <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Log Masuk</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Staff PIN Modal (FAB) -->
-    <div id="staff-pin-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+    <!-- Redeem Modal (FAB) -->
+    <div id="redeem-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="redeem-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-key text-gold-400"></i> Staff Authorization
+                    <i class="fa-solid fa-coins text-gold-400"></i> Penebusan Point & Cap
                 </h3>
-                <button onclick="closeModal('staff-pin-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('redeem-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-xs text-gray-400 mb-4">Masukkan PIN staff yang sah untuk akses ke panel admin.</p>
-            <form onsubmit="handleStaffPin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">PIN Staff</label>
-                    <input type="password" id="staff-pin-input" required placeholder="Masukkan PIN 4-6 digit" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white text-center tracking-widest focus:outline-none focus:border-gold-500" maxlength="6" inputmode="numeric">
+            <!-- Step 1: PIN verification -->
+            <div id="redeem-step-pin">
+                <p class="text-xs text-gray-400 mb-4">Masukkan PIN staff yang sah untuk menambah point atau cap.</p>
+                <form onsubmit="handleRedeemPin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">PIN Staff</label>
+                        <input type="password" id="redeem-pin-input" required placeholder="Masukkan PIN 4-6 digit" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white text-center tracking-widest focus:outline-none focus:border-gold-500" maxlength="6" inputmode="numeric">
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="closeModal('redeem-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                        <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Sahkan PIN</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Step 2: Add points/caps (hidden initially) -->
+            <div id="redeem-step-action" class="hidden">
+                <p class="text-xs text-gray-400 mb-4">PIN sah! Anda boleh tambah point atau cap untuk pelanggan ini.</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tambah Point</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="redeem-points-add" min="0" value="10" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-gold-500">
+                            <button onclick="addRedeemPoints()" class="px-4 py-2.5 rounded-xl coffee-btn text-xs font-bold shadow">Tambah</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tambah Cap</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="redeem-caps-add" min="0" max="10" value="1" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-gold-500">
+                            <button onclick="addRedeemCaps()" class="px-4 py-2.5 rounded-xl coffee-btn text-xs font-bold shadow">Tambah</button>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('redeem-modal')" class="w-full py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Tutup</button>
                 </div>
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeModal('staff-pin-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
-                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Sahkan</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- Add/Edit Review Modal -->
-    <div id="review-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+    <!-- Add/Edit Review Modal (with image upload) -->
+    <div id="review-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="review-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 id="review-modal-title" class="text-base font-bold text-white">Tulis Ulasan</h3>
                 <button onclick="closeModal('review-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -827,17 +870,41 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Ulasan Anda</label>
                     <textarea id="review-comment" required rows="3" placeholder="Kongsikan pengalaman kopi anda di Selagi Coffee..." class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400"></textarea>
                 </div>
+                <!-- Image upload section -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar (Pilih dari galeri)</label>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" onclick="document.getElementById('review-image-file').click()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">
+                            <i class="fa-solid fa-image"></i> Pilih Gambar
+                        </button>
+                        <input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="handleReviewImageSelect(event)">
+                        <span id="review-image-filename" class="text-xs text-gray-400">Tiada gambar dipilih</span>
+                    </div>
+                    <div id="review-image-preview" class="mt-2 hidden">
+                        <div class="relative inline-block">
+                            <img id="review-image-preview-img" src="" alt="Preview" class="w-20 h-20 rounded-lg object-cover border border-gray-700">
+                            <button type="button" onclick="removeReviewImage()" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-rose-600 text-white text-xs flex items-center justify-center shadow-lg hover:bg-rose-700 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Hidden field to store image URL (from upload) -->
+                    <input type="hidden" id="review-image-url" value="">
+                </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeModal('review-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
-                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Hantar Ulasan</button>
+                    <button type="submit" id="review-submit-btn" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Hantar Ulasan</button>
+                </div>
+                <div id="review-upload-progress" class="hidden w-full bg-charcoal-900 rounded-full h-1.5 mt-2">
+                    <div id="review-upload-progress-bar" class="bg-gold-400 h-1.5 rounded-full transition-all duration-300" style="width:0%"></div>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Customer Profile Edit Modal -->
-    <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+    <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="edit-profile-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-white">Kemaskini Profil</h3>
                 <button onclick="closeModal('edit-profile-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -868,8 +935,8 @@
     </div>
 
     <!-- Admin Edit Customer Modal – with Password field -->
-    <div id="admin-edit-customer-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-gold-500/30">
+    <div id="admin-edit-customer-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="admin-edit-customer-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-white">Kelola Pelanggan</h3>
                 <button onclick="closeModal('admin-edit-customer-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -921,8 +988,8 @@
     </div>
 
     <!-- Admin Add/Edit Reward Modal -->
-    <div id="reward-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+    <div id="reward-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="reward-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 id="reward-modal-title" class="text-base font-bold text-white">Add Reward</h3>
                 <button onclick="closeModal('reward-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -958,8 +1025,8 @@
     </div>
 
     <!-- Admin Add/Edit Promotion Modal -->
-    <div id="promo-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+    <div id="promo-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="promo-modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 id="promo-modal-title" class="text-base font-bold text-white">Add Promotion</h3>
                 <button onclick="closeModal('promo-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -1002,11 +1069,11 @@
 
 
     <!-- ============================================================== -->
-    <!-- ===== JS APPLICATION LOGIC (DENGAN FIREBASE AUTH) ===== -->
+    <!-- ===== JS APPLICATION LOGIC (DENGAN FIREBASE AUTH & STORAGE) ===== -->
     <!-- ============================================================== -->
     <script>
         /* ==========================================================================
-           1. FIREBASE AUTH + DATABASE HELPERS
+           1. FIREBASE AUTH + DATABASE + STORAGE HELPERS
            ========================================================================== */
 
         // Firebase Realtime Database references
@@ -1080,6 +1147,7 @@
         let promotionsCache = {};
         let reviewsCache = {};
         let redemptionsCache = {};
+        let pendingReviewImageFile = null; // for upload
 
         // Listen to Firebase Auth state changes
         firebase.auth().onAuthStateChanged(async (user) => {
@@ -1251,6 +1319,7 @@
                             customerName: 'Nafi',
                             rating: 5,
                             comment: 'Pistachio Latte memang padu! Tempat cozy & servis pantas. Cap reward pun mudah dikumpul!',
+                            image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&auto=format&fit=crop&q=60',
                             createdAt: '2026-09-02'
                         },
                         'rev-2': {
@@ -1258,6 +1327,7 @@
                             customerName: 'Aina Safiah',
                             rating: 5,
                             comment: 'Suka sangat dengan suasana Selagi Coffee. Kopi sentiasa segar & wangi.',
+                            image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&auto=format&fit=crop&q=60',
                             createdAt: '2026-09-05'
                         }
                     };
@@ -1328,9 +1398,10 @@
             const modal = document.getElementById('confirm-modal');
             const card = document.getElementById('confirm-modal-card');
             modal.classList.remove('hidden');
+            // Animate in
             setTimeout(() => {
-                card.classList.remove('scale-95', 'opacity-0');
-                card.classList.add('scale-100', 'opacity-100');
+                card.classList.remove('scale-out');
+                card.classList.add('scale-in');
             }, 10);
         }
 
@@ -1343,13 +1414,34 @@
         function closeConfirmModal() {
             const modal = document.getElementById('confirm-modal');
             const card = document.getElementById('confirm-modal-card');
-            card.classList.remove('scale-100', 'opacity-100');
-            card.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); }, 200);
+            card.classList.remove('scale-in');
+            card.classList.add('scale-out');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // Improved modal open/close with animation
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const card = modal.querySelector('.modal-card');
+            modal.classList.remove('hidden');
+            // Force reflow
+            void modal.offsetWidth;
+            card.classList.remove('scale-out');
+            card.classList.add('scale-in');
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+            const modal = document.getElementById(modalId);
+            const card = modal.querySelector('.modal-card');
+            if (card) {
+                card.classList.remove('scale-in');
+                card.classList.add('scale-out');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            } else {
+                modal.classList.add('hidden');
+            }
         }
 
         /* ==========================================================================
@@ -1750,6 +1842,7 @@
                 const stars = '⭐'.repeat(r.rating);
                 const div = document.createElement('div');
                 div.className = 'glass-panel p-3.5 rounded-2xl border border-white/5 space-y-1.5 relative';
+                let imageHtml = r.image ? `<img src="${r.image}" class="w-full h-24 object-cover rounded-lg mt-1" onerror="this.style.display='none'" alt="Review image">` : '';
                 div.innerHTML = `
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -1762,6 +1855,7 @@
                                 <span class="text-[10px] text-gold-400">${stars}</span>
                             </div>
                             <p class="text-xs text-gray-300 leading-relaxed pl-9">${r.comment}</p>
+                            ${imageHtml}
                             <div class="flex justify-between items-center pl-9 pt-1 text-[9px] text-gray-500">
                                 <span>${r.createdAt}</span>
                                 ${isOwn ? `<button onclick="openEditReviewModal('${r.id}')" class="text-xs text-coffee-300 hover:text-gold-400 font-semibold"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` : ''}
@@ -1912,13 +2006,18 @@
             });
         }
 
-        // Review handlers
+        // Review handlers (with image upload)
         function openAddReviewModal() {
             document.getElementById('review-edit-id').value = '';
             document.getElementById('review-modal-title').textContent = 'Tulis Ulasan';
             document.getElementById('review-comment').value = '';
             document.getElementById('review-rating').value = '5';
-            document.getElementById('review-modal').classList.remove('hidden');
+            document.getElementById('review-image-url').value = '';
+            document.getElementById('review-image-file').value = '';
+            document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
+            document.getElementById('review-image-preview').classList.add('hidden');
+            pendingReviewImageFile = null;
+            openModal('review-modal');
         }
 
         function openEditReviewModal(reviewId) {
@@ -1929,7 +2028,80 @@
             document.getElementById('review-modal-title').textContent = 'Kemaskini Ulasan';
             document.getElementById('review-comment').value = rev.comment;
             document.getElementById('review-rating').value = rev.rating;
-            document.getElementById('review-modal').classList.remove('hidden');
+            document.getElementById('review-image-url').value = rev.image || '';
+            document.getElementById('review-image-file').value = '';
+            document.getElementById('review-image-filename').textContent = rev.image ? 'Gambar sedia ada' : 'Tiada gambar';
+            if (rev.image) {
+                document.getElementById('review-image-preview-img').src = rev.image;
+                document.getElementById('review-image-preview').classList.remove('hidden');
+            } else {
+                document.getElementById('review-image-preview').classList.add('hidden');
+            }
+            pendingReviewImageFile = null;
+            openModal('review-modal');
+        }
+
+        function handleReviewImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
+                event.target.value = '';
+                return;
+            }
+            pendingReviewImageFile = file;
+            document.getElementById('review-image-filename').textContent = file.name;
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('review-image-preview-img').src = e.target.result;
+                document.getElementById('review-image-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeReviewImage() {
+            pendingReviewImageFile = null;
+            document.getElementById('review-image-file').value = '';
+            document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
+            document.getElementById('review-image-preview').classList.add('hidden');
+            document.getElementById('review-image-url').value = '';
+        }
+
+        // Upload image to Firebase Storage and return download URL
+        function uploadReviewImage(file, userId) {
+            return new Promise((resolve, reject) => {
+                const storageRef = storage.ref();
+                const timestamp = Date.now();
+                const filename = `${userId}_${timestamp}_${file.name}`;
+                const imageRef = storageRef.child(`reviews/${filename}`);
+                const uploadTask = imageRef.put(file);
+
+                // Show progress bar
+                const progressContainer = document.getElementById('review-upload-progress');
+                const progressBar = document.getElementById('review-upload-progress-bar');
+                progressContainer.classList.remove('hidden');
+                progressBar.style.width = '0%';
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                    },
+                    (error) => {
+                        progressContainer.classList.add('hidden');
+                        reject(error);
+                    },
+                    () => {
+                        // Upload completed successfully, get download URL
+                        imageRef.getDownloadURL().then((url) => {
+                            progressContainer.classList.add('hidden');
+                            resolve(url);
+                        }).catch(reject);
+                    }
+                );
+            });
         }
 
         function handleSaveReview(e) {
@@ -1937,35 +2109,72 @@
             const revId = document.getElementById('review-edit-id').value;
             const comment = document.getElementById('review-comment').value.trim();
             const rating = parseInt(document.getElementById('review-rating').value);
-            let reviews = getCachedData(reviewsCache);
+            const existingImageUrl = document.getElementById('review-image-url').value;
 
-            if (revId) {
-                const rev = reviews.find(r => r.id === revId);
-                if (rev && rev.customerId === currentCustomerData.id) {
+            // If there is a pending image file, upload first, then save review
+            const submitBtn = document.getElementById('review-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memuat naik...';
+
+            const saveReviewData = (imageUrl) => {
+                let reviews = getCachedData(reviewsCache);
+                if (revId) {
+                    const rev = reviews.find(r => r.id === revId);
+                    if (rev && rev.customerId === currentCustomerData.id) {
+                        const updateObj = {};
+                        updateObj[revId] = { ...rev, comment, rating, image: imageUrl };
+                        updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
+                            showToast('Ulasan dikemaskini!', 'success');
+                            closeModal('review-modal');
+                            renderHomeReviews();
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Hantar Ulasan';
+                        });
+                    }
+                } else {
+                    const newRevId = 'rev-' + generateId();
+                    const newRev = {
+                        customerId: currentCustomerData.id,
+                        customerName: currentCustomerData.name,
+                        rating: rating,
+                        comment: comment,
+                        image: imageUrl || '',
+                        createdAt: new Date().toISOString().split('T')[0]
+                    };
                     const updateObj = {};
-                    updateObj[revId] = { ...rev, comment, rating };
+                    updateObj[newRevId] = newRev;
                     updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                        showToast('Ulasan dikemaskini!', 'success');
+                        showToast('Terima kasih atas ulasan anda!', 'success');
                         closeModal('review-modal');
                         renderHomeReviews();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Hantar Ulasan';
                     });
                 }
+            };
+
+            if (pendingReviewImageFile) {
+                // Upload image
+                uploadReviewImage(pendingReviewImageFile, currentCustomerData.id)
+                    .then((url) => {
+                        // Save review with image URL
+                        saveReviewData(url);
+                        // Clear pending
+                        pendingReviewImageFile = null;
+                        document.getElementById('review-image-file').value = '';
+                        document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
+                        document.getElementById('review-image-preview').classList.add('hidden');
+                    })
+                    .catch((error) => {
+                        showToast('Gagal memuat naik gambar: ' + error.message, 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Hantar Ulasan';
+                        console.error(error);
+                    });
             } else {
-                const newRevId = 'rev-' + generateId();
-                const newRev = {
-                    customerId: currentCustomerData.id,
-                    customerName: currentCustomerData.name,
-                    rating: rating,
-                    comment: comment,
-                    createdAt: new Date().toISOString().split('T')[0]
-                };
-                const updateObj = {};
-                updateObj[newRevId] = newRev;
-                updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                    showToast('Terima kasih atas ulasan anda!', 'success');
-                    closeModal('review-modal');
-                    renderHomeReviews();
-                });
+                // No new image, use existing (maybe removed)
+                const imageUrl = document.getElementById('review-image-url').value || '';
+                saveReviewData(imageUrl);
             }
         }
 
@@ -1975,7 +2184,7 @@
             document.getElementById('edit-prof-phone').value = currentCustomerData.phone;
             document.getElementById('edit-prof-birthday').value = currentCustomerData.birthday || '';
             document.getElementById('edit-prof-pass').value = '';
-            document.getElementById('edit-profile-modal').classList.remove('hidden');
+            openModal('edit-profile-modal');
         }
 
         function handleSaveProfile(e) {
@@ -2012,41 +2221,111 @@
         }
 
         /* ==========================================================================
-           5. STAFF / ADMIN DASHBOARD
+           5. STAFF / ADMIN DASHBOARD & REDEEM FUNCTIONS
            ========================================================================== */
 
-        // Staff FAB handler
-        function handleStaffFabClick() {
-            document.getElementById('staff-pin-input').value = '';
-            document.getElementById('staff-pin-modal').classList.remove('hidden');
+        // Redeem FAB handler
+        function handleRedeemFabClick() {
+            // Reset the modal to step 1
+            document.getElementById('redeem-step-pin').classList.remove('hidden');
+            document.getElementById('redeem-step-action').classList.add('hidden');
+            document.getElementById('redeem-pin-input').value = '';
+            document.getElementById('redeem-points-add').value = '10';
+            document.getElementById('redeem-caps-add').value = '1';
+            openModal('redeem-modal');
         }
 
-        // Staff PIN submission
-        function handleStaffPin(e) {
+        // Handle PIN submission for redeem
+        function handleRedeemPin(e) {
             e.preventDefault();
-            const pin = document.getElementById('staff-pin-input').value.trim();
-            // Allowed PINs: 9899, 991414, 2024
-            const validPins = ['9899', '991414', '2024'];
+            const pin = document.getElementById('redeem-pin-input').value.trim();
+            const validPins = ['9899', '991414', '2024', '2407'];
             if (validPins.includes(pin)) {
-                closeModal('staff-pin-modal');
-                showToast('Akses Staff Dibenarkan.', 'success');
-                showStaffDashboard();
+                // PIN valid, show action step
+                document.getElementById('redeem-step-pin').classList.add('hidden');
+                document.getElementById('redeem-step-action').classList.remove('hidden');
+                showToast('PIN sah! Anda boleh tambah point/cap.', 'success');
             } else {
                 showToast('PIN tidak sah! Sila cuba lagi.', 'error');
-                document.getElementById('staff-pin-input').value = '';
-                document.getElementById('staff-pin-input').focus();
+                document.getElementById('redeem-pin-input').value = '';
+                document.getElementById('redeem-pin-input').focus();
             }
         }
 
-        // Existing staff login modal (for backup)
+        // Add points function
+        function addRedeemPoints() {
+            if (!currentCustomerData) {
+                showToast('Tiada pelanggan aktif.', 'error');
+                return;
+            }
+            const pointsToAdd = parseInt(document.getElementById('redeem-points-add').value) || 0;
+            if (pointsToAdd <= 0) {
+                showToast('Sila masukkan nilai point positif.', 'error');
+                return;
+            }
+            const customers = getCachedData(customersCache);
+            const cust = customers.find(c => c.id === currentCustomerData.id);
+            if (cust) {
+                cust.points = (cust.points || 0) + pointsToAdd;
+                const updateObj = {};
+                updateObj[currentCustomerData.id] = { ...cust };
+                updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                    currentCustomerData = { id: currentCustomerData.id, ...cust };
+                    refreshCustomerUI();
+                    showToast(`✅ ${pointsToAdd} point berjaya ditambah!`, 'success');
+                    // Optionally close modal after a delay
+                    setTimeout(() => closeModal('redeem-modal'), 1500);
+                });
+            }
+        }
+
+        // Add caps function
+        function addRedeemCaps() {
+            if (!currentCustomerData) {
+                showToast('Tiada pelanggan aktif.', 'error');
+                return;
+            }
+            const capsToAdd = parseInt(document.getElementById('redeem-caps-add').value) || 0;
+            if (capsToAdd <= 0) {
+                showToast('Sila masukkan nilai cap positif.', 'error');
+                return;
+            }
+            // Cap cannot exceed 10? We can allow but handle automatically
+            const customers = getCachedData(customersCache);
+            const cust = customers.find(c => c.id === currentCustomerData.id);
+            if (cust) {
+                let newCaps = (cust.caps || 0) + capsToAdd;
+                // If newCaps >= 10, we can trigger achievement or just reset
+                if (newCaps >= 10) {
+                    // Trigger achievement and reset to remainder
+                    const remainder = newCaps % 10;
+                    cust.caps = remainder;
+                    // Show achievement toast
+                    showToast('🎉 Tahniah! Cap penuh! Ganjaran telah diberikan.', 'success');
+                    // Maybe give extra points? For now just reset
+                } else {
+                    cust.caps = newCaps;
+                }
+                const updateObj = {};
+                updateObj[currentCustomerData.id] = { ...cust };
+                updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                    currentCustomerData = { id: currentCustomerData.id, ...cust };
+                    refreshCustomerUI();
+                    showToast(`✅ ${capsToAdd} cap berjaya ditambah!`, 'success');
+                    setTimeout(() => closeModal('redeem-modal'), 1500);
+                });
+            }
+        }
+
+        // Existing staff login modal (for admin)
         function showStaffLoginModal() {
             document.getElementById('staff-id').value = '';
             document.getElementById('staff-password').value = '';
-            document.getElementById('staff-login-modal').classList.remove('hidden');
+            openModal('staff-login-modal');
         }
 
         function closeStaffModal() {
-            document.getElementById('staff-login-modal').classList.add('hidden');
+            closeModal('staff-login-modal');
         }
 
         function handleStaffLogin(e) {
@@ -2054,7 +2333,7 @@
             const id = document.getElementById('staff-id').value.trim();
             const pass = document.getElementById('staff-password').value;
             if (id === 'admin' && pass === 'Admin24') {
-                closeStaffModal();
+                closeModal('staff-login-modal');
                 showToast('Akses Admin Dibenarkan.', 'success');
                 showStaffDashboard();
             } else {
@@ -2185,7 +2464,7 @@
             document.getElementById('adm-cust-points').value = cust.points;
             document.getElementById('adm-cust-caps').value = cust.caps;
             document.getElementById('adm-cust-password').value = '';
-            document.getElementById('admin-edit-customer-modal').classList.remove('hidden');
+            openModal('admin-edit-customer-modal');
         }
 
         function handleAdminSaveCustomer(e) {
@@ -2267,7 +2546,7 @@
             document.getElementById('r-points').value = '100';
             document.getElementById('r-image').value = '';
             document.getElementById('r-active').checked = true;
-            document.getElementById('reward-modal').classList.remove('hidden');
+            openModal('reward-modal');
         }
 
         function openEditRewardModal(rewardId) {
@@ -2281,7 +2560,7 @@
             document.getElementById('r-points').value = r.pointsRequired;
             document.getElementById('r-image').value = r.image || '';
             document.getElementById('r-active').checked = r.active;
-            document.getElementById('reward-modal').classList.remove('hidden');
+            openModal('reward-modal');
         }
 
         function handleSaveReward(e) {
@@ -2364,7 +2643,7 @@
             document.getElementById('p-end').value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
                 .split('T')[0];
             document.getElementById('p-active').checked = true;
-            document.getElementById('promo-modal').classList.remove('hidden');
+            openModal('promo-modal');
         }
 
         function openEditPromoModal(promoId) {
@@ -2379,7 +2658,7 @@
             document.getElementById('p-start').value = p.startDate;
             document.getElementById('p-end').value = p.endDate;
             document.getElementById('p-active').checked = p.active;
-            document.getElementById('promo-modal').classList.remove('hidden');
+            openModal('promo-modal');
         }
 
         function handleSavePromo(e) {
@@ -2436,11 +2715,13 @@
                 const div = document.createElement('div');
                 div.className =
                     'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-2 flex items-center justify-between';
+                let imageHtml = r.image ? `<img src="${r.image}" class="w-12 h-12 rounded-lg object-cover" onerror="this.style.display='none'" alt="Review image">` : '';
                 div.innerHTML = `
-                            <div class="space-y-1">
+                            <div class="space-y-1 flex-1">
                                 <div class="flex items-center gap-2">
                                     <span class="font-bold text-white text-xs">${r.customerName}</span>
                                     <span class="text-[10px] text-gold-400">${'⭐'.repeat(r.rating)}</span>
+                                    ${imageHtml}
                                 </div>
                                 <p class="text-xs text-gray-300">${r.comment}</p>
                                 <p class="text-[10px] text-gray-500">${r.createdAt}</p>
