@@ -1,0 +1,1957 @@
+
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SELAGI COFFEE ARTISAN MEMBERS</title>
+
+    <!-- ===== FIREBASE SDK (CDN Compat) ===== -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js">
+    </script>
+
+    <!-- ===== FIREBASE INITIALIZATION ===== -->
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvFgF3hvpj4E7y7xg1VfoE9A7h8K_oVsk",
+            authDomain: "selagi-coffee-vip.firebaseapp.com",
+            projectId: "selagi-coffee-vip",
+            storageBucket: "selagi-coffee-vip.firebasestorage.app",
+            messagingSenderId: "353230382052",
+            appId: "1:353230382052:web:45c82f64cedde9bcde1df1",
+            measurementId: "G-77ZN37FNT1"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics(app);
+
+        console.log('🔥 Firebase initialized successfully.');
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coffee: {
+                            50: '#fdfbf7',
+                            100: '#f7f0e6',
+                            200: '#e9d7c2',
+                            300: '#d9ba98',
+                            400: '#c89666',
+                            500: '#b7783d',
+                            600: '#a3602f',
+                            700: '#834926',
+                            800: '#542d18',
+                            900: '#2b160b',
+                            950: '#1a0b05',
+                        },
+                        gold: {
+                            300: '#f3e5ab',
+                            400: '#e5c158',
+                            500: '#d4af37',
+                            600: '#aa8822',
+                        },
+                        charcoal: {
+                            800: '#1e1e1e',
+                            900: '#121212',
+                            950: '#0a0a0a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c89666;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa8822 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-card-bg {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a221b 50%, #121212 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        .gold-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b89224 100%);
+            color: #0a0a0a;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .gold-btn:hover {
+            background: linear-gradient(135deg, #e5c158 0%, #d4af37 100%);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .coffee-btn {
+            background: linear-gradient(135deg, #c89666 0%, #a3602f 100%);
+            color: #ffffff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .coffee-btn:hover {
+            background: linear-gradient(135deg, #d9ba98 0%, #c89666 100%);
+            box-shadow: 0 4px 15px rgba(200, 150, 102, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #ffffff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .danger-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes stampPop {
+            0% {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .stamp-pop {
+            animation: stampPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #121212;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        #toast {
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+    </style>
+</head>
+<body class="bg-charcoal-950 text-gray-100 font-sans antialiased min-h-screen selection:bg-coffee-400 selection:text-black">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-20 opacity-0 pointer-events-none transition-all duration-300 w-[90%] max-w-sm">
+        <div id="toast-body" class="glass-panel px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-gold-500/30">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-gold-400 text-xl"></i>
+            <p id="toast-msg" class="text-sm font-medium text-gray-100">Notification message</p>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-xs rounded-3xl p-6 text-center border border-gold-500/20 transform transition-all duration-300 scale-95 opacity-0" id="confirm-modal-card">
+            <div class="w-14 h-14 rounded-full bg-coffee-900/60 border border-coffee-400/30 text-coffee-300 flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i id="confirm-modal-icon" class="fa-solid fa-circle-question"></i>
+            </div>
+            <h3 id="confirm-modal-title" class="text-lg font-bold text-white mb-2">Pengesahan</h3>
+            <p id="confirm-modal-desc" class="text-xs text-gray-300 mb-6 leading-relaxed">Adakah anda pasti mahu meneruskan tindakan ini?</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button id="confirm-modal-cancel" class="px-4 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-semibold text-xs hover:bg-gray-700 transition">Batal</button>
+                <button id="confirm-modal-ok" class="px-4 py-2.5 rounded-xl gold-btn text-xs font-bold">Teruskan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div id="main-app" class="w-full min-h-screen">
+
+        <!-- CUSTOMER AUTH VIEW -->
+        <section id="auth-view" class="app-container flex flex-col justify-between p-6">
+            <!-- Header branding -->
+            <div class="pt-8 pb-4 text-center">
+                <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-tr from-coffee-900 via-charcoal-800 to-coffee-800 border-2 border-gold-500/40 shadow-xl mb-4 overflow-hidden">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKNTcswI0MKvgwch0V6Lal3qR08ozQYkBACiB7xYPitnVeS5yWka1j3Zg&s=10" alt="Selagi Coffee Logo" class="w-full h-full object-cover">
+                </div>
+                <h1 class="font-serif text-2xl font-bold tracking-wider text-white">SELAGI COFFEE</h1>
+                <p class="text-[10px] tracking-widest text-gold-400 font-semibold uppercase mt-1">Artisan Members Club</p>
+            </div>
+
+            <!-- LOGIN FORM – Phone Only -->
+            <div id="login-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white">Welcome Back 👋</h2>
+                    <p class="text-xs text-gray-400 mt-1">Log masuk menggunakan nombor telefon anda.</p>
+                </div>
+
+                <form id="form-login" onsubmit="handleCustomerLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1.5">No. Telefon</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                            <input type="tel" id="login-phone" required placeholder="01173108046" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition">
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1.5"><i class="fa-regular fa-circle-check text-emerald-500"></i> Log masuk dengan nombor telefon sahaja — tiada kata laluan diperlukan.</p>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="button" onclick="showToast('Sila hubungi barista di kaunter untuk bantuan log masuk.', 'info')" class="text-xs text-coffee-400 hover:text-gold-400 transition">Masalah Log Masuk?</button>
+                    </div>
+
+                    <div class="pt-2 space-y-2.5">
+                        <button type="submit" class="w-full py-3.5 rounded-xl gold-btn text-sm font-bold tracking-wide shadow-lg">LOG MASUK</button>
+                        <button type="button" onclick="toggleAuthMode('register')" class="w-full py-3.5 rounded-xl bg-charcoal-800 text-coffee-300 hover:bg-gray-800 border border-coffee-400/30 text-sm font-bold transition">DAFTAR AKAUN</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- REGISTER FORM – with Email & Password -->
+            <div id="register-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl hidden">
+                <div class="mb-5">
+                    <h2 class="text-xl font-bold text-white">Daftar Keahlian ✨</h2>
+                    <p class="text-xs text-gray-400 mt-1">Sertai Selagi Coffee Artisan Members hari ini.</p>
+                </div>
+
+                <form id="form-register" onsubmit="handleCustomerRegister(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Nama Penuh</label>
+                        <input type="text" id="reg-name" required placeholder="Contoh: Nafi Ahmad" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Emel</label>
+                        <input type="email" id="reg-email" required placeholder="nafi@selagi.coffee" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">No. Telefon</label>
+                        <input type="tel" id="reg-phone" required placeholder="011XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tarikh Lahir</label>
+                        <input type="date" id="reg-birthday" required class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Kata Laluan</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Sahkan Kata Laluan</label>
+                        <input type="password" id="reg-confirm-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                    </div>
+
+                    <div class="pt-2 space-y-2">
+                        <button type="submit" class="w-full py-3.5 rounded-xl gold-btn text-sm font-bold shadow-lg">DAFTAR SEKARANG</button>
+                        <button type="button" onclick="toggleAuthMode('login')" class="w-full py-2.5 text-xs text-gray-400 hover:text-white transition">Sudah ada akaun? Log Masuk</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Staff portal link -->
+            <div class="pb-4 text-center">
+                <button onclick="showStaffLoginModal()" class="text-[11px] text-gray-500 hover:text-coffee-300 transition flex items-center justify-center gap-1.5 mx-auto">
+                    <i class="fa-solid fa-user-shield"></i> Staff & Barista Login
+                </button>
+            </div>
+        </section>
+
+        <!-- CUSTOMER DASHBOARD VIEW -->
+        <section id="customer-dashboard" class="app-container pb-28 hidden">
+            <!-- Top App Bar -->
+            <header class="sticky top-0 z-40 glass-panel px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-coffee-900 border border-gold-500/40 flex items-center justify-center overflow-hidden">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKNTcswI0MKvgwch0V6Lal3qR08ozQYkBACiB7xYPitnVeS5yWka1j3Zg&s=10" alt="Selagi Coffee Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-bold tracking-wider text-white">SELAGI COFFEE</h2>
+                        <p class="text-[9px] text-gold-400 tracking-widest font-semibold uppercase">ARTISAN MEMBERS</p>
+                    </div>
+                </div>
+                <button onclick="confirmCustomerLogout()" class="px-3 py-1.5 rounded-xl bg-charcoal-800 hover:bg-rose-950/40 text-rose-400 hover:text-rose-300 text-xs font-medium border border-rose-500/20 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> Log Out
+                </button>
+            </header>
+
+            <!-- TAB CONTENTS -->
+            <main class="p-5">
+                <!-- HOME TAB -->
+                <div id="tab-home" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                                Hello, <span id="dash-greeting-name" class="gold-gradient-text">Nafi</span> 👋
+                            </h1>
+                            <p class="text-xs text-gray-400 mt-0.5">Welcome back to Selagi Coffee.</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-coffee-900/60 border border-coffee-400/30 text-[10px] font-semibold text-coffee-300">VIP Artisan</span>
+                    </div>
+
+                    <!-- Membership Card -->
+                    <div class="gold-card-bg rounded-3xl p-6 relative overflow-hidden shadow-2xl">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-coffee-500/10 blur-2xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -top-10 w-32 h-32 rounded-full bg-gold-500/10 blur-xl pointer-events-none"></div>
+                        <div class="flex items-start justify-between relative z-10 mb-8">
+                            <div>
+                                <p class="text-[10px] tracking-widest text-gold-400 font-bold uppercase">DIGITAL PASS</p>
+                                <h3 class="font-serif text-lg font-bold text-white tracking-wide">SELAGI COFFEE</h3>
+                            </div>
+                            <i class="fa-solid fa-crown text-2xl text-gold-400 opacity-80"></i>
+                        </div>
+                        <div class="relative z-10 mb-6">
+                            <p id="dash-card-name" class="text-lg font-bold text-white tracking-wide">Nafi Ahmad</p>
+                            <p id="dash-card-phone" class="text-xs text-gray-400 font-mono mt-0.5">01173108046</p>
+                        </div>
+                        <div class="relative z-10 grid grid-cols-2 gap-3 pt-4 border-t border-white/10">
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider">Total Points</p>
+                                <p class="text-xl font-black text-gold-400 mt-0.5"><span id="dash-card-points">850</span> <span class="text-xs font-normal text-gray-300">PTS</span></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-wider">Coffee Cap</p>
+                                <p class="text-xl font-black text-coffee-300 mt-0.5"><span id="dash-card-caps">7</span><span class="text-xs font-normal text-gray-400"> / 10 CAP</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Promotion Carousel -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-gold-400 text-xs"></i> Latest Promotion
+                            </h3>
+                            <span class="text-[10px] text-gray-500">Swipe & View</span>
+                        </div>
+                        <div id="home-promotions-list" class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 snap-x"></div>
+                    </div>
+
+                    <!-- Member Reviews -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-coffee-400 text-xs"></i> What Our Members Say
+                            </h3>
+                            <button onclick="openAddReviewModal()" class="text-xs text-gold-400 hover:underline font-medium">+ Add Review</button>
+                        </div>
+                        <div id="home-reviews-list" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- REWARDS TAB -->
+                <div id="tab-reward" class="tab-content space-y-5 hidden">
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Member Rewards 🎁</h1>
+                        <p class="text-xs text-gray-400 mt-1">Tebus mata ganjaran anda untuk pelbagai sajian istimewa.</p>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl border border-coffee-400/20 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-400 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase font-medium">Baki Point Anda</p>
+                                <p class="text-base font-bold text-white"><span id="reward-user-points" class="gold-gradient-text text-lg">850</span> Points</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('point')" class="text-xs text-coffee-300 underline font-medium">Kumpul Lagi</button>
+                    </div>
+                    <div id="rewards-grid" class="grid grid-cols-1 gap-4"></div>
+                </div>
+
+                <!-- POINT & CAP TAB -->
+                <div id="tab-point" class="tab-content space-y-6 hidden">
+                    <div>
+                        <h1 class="text-xl font-bold text-white">POINT & CAP ⭐</h1>
+                        <p class="text-xs text-gray-400 mt-1">Kumpul cap minuman & kumpulkan point untuk keahlian artisan.</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-gold-400 tracking-wider uppercase">ARTISAN POINTS</span>
+                                <h2 class="text-3xl font-black text-white mt-1"><span id="point-tab-total">850</span> <span class="text-sm font-normal text-gray-400">PTS</span></h2>
+                                <p class="text-[11px] text-gray-400 mt-1">
+                                    <i class="fa-regular fa-clock text-coffee-400"></i> Points valid until: <span id="point-tab-expiry" class="text-gray-200 font-medium">8 September 2027</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 text-xl">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-gray-400">Progress ke Next Tier</span>
+                                <span id="point-progress-text" class="text-gold-400">850 / 1000 Points</span>
+                            </div>
+                            <div class="w-full bg-charcoal-900 rounded-full h-3 overflow-hidden border border-gray-800">
+                                <div id="point-progress-bar" class="gold-btn h-full rounded-full transition-all duration-500" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-coffee-400 tracking-wider uppercase">STAMP CARD</span>
+                                <h2 class="text-lg font-bold text-white flex items-center gap-2">☕ CAP COLLECTION</h2>
+                                <p class="text-xs text-gray-400 mt-0.5">Lengkapkan 10 cap untuk dapatkan ganjaran percuma automatik!</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-xl bg-coffee-900/80 border border-coffee-400/40 text-xs font-bold text-coffee-300" id="cap-count-badge">7 / 10 CAP</span>
+                        </div>
+                        <div id="cap-stamp-grid" class="grid grid-cols-5 gap-3 pt-2"></div>
+                        <div class="bg-charcoal-900/60 rounded-2xl p-3 border border-gray-800 text-[11px] text-gray-400 flex items-start gap-2">
+                            <i class="fa-solid fa-circle-info text-coffee-400 mt-0.5"></i>
+                            <span>Apabila mencapai 10 cap, cap akan di-reset automatik kepada 0 untuk kitaran baru. Point anda tidak akan di-reset.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE TAB -->
+                <div id="tab-profile" class="tab-content space-y-6 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-xl font-bold text-white">MY PROFILE 👤</h1>
+                            <p class="text-xs text-gray-400 mt-1">Maklumat keahlian & profil peribadi.</p>
+                        </div>
+                        <button onclick="openEditProfileModal()" class="px-3.5 py-2 rounded-xl coffee-btn text-xs font-semibold flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i> Edit Profile
+                        </button>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
+                        <div class="flex items-center gap-4 pb-4 border-b border-white/5">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-coffee-800 to-coffee-600 border-2 border-gold-500/40 text-white flex items-center justify-center text-2xl font-bold font-serif shadow-lg" id="profile-avatar">N</div>
+                            <div>
+                                <h3 id="profile-name" class="text-lg font-bold text-white">Nafi Ahmad</h3>
+                                <p id="profile-membership" class="text-xs text-gold-400 font-semibold">Selagi Coffee Artisan Members</p>
+                                <p id="profile-phone" class="text-xs text-gray-400 font-mono mt-0.5">01173108046</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 pt-1">
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase">Tarikh Lahir</p>
+                                <p id="profile-birthday" class="text-xs font-semibold text-gray-200 mt-0.5">03/01/1999</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 uppercase">Status Keahlian</p>
+                                <p class="text-xs font-semibold text-emerald-400 mt-0.5"><i class="fa-solid fa-circle-check"></i> Aktif</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Ringkasan Kemajuan</h4>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-400">POINT PROGRESS</span>
+                                <span id="profile-point-summary" class="font-bold text-gold-400">850 Points</span>
+                            </div>
+                            <div class="w-full bg-charcoal-900 rounded-full h-2.5 overflow-hidden">
+                                <div id="profile-point-bar" class="gold-btn h-full rounded-full" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 pt-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-400">CAP PROGRESS</span>
+                                <span id="profile-cap-summary" class="font-bold text-coffee-300">7 / 10 Caps</span>
+                            </div>
+                            <div class="w-full bg-charcoal-900 rounded-full h-2.5 overflow-hidden">
+                                <div id="profile-cap-bar" class="coffee-btn h-full rounded-full" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-gold-400"></i> Sejarah Penebusan
+                        </h4>
+                        <div id="profile-redemptions-list" class="space-y-2.5"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- FIXED BOTTOM NAV -->
+            <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] glass-panel border-t border-white/10 px-4 py-2 z-50 rounded-t-3xl shadow-2xl">
+                <div class="grid grid-cols-4 gap-1">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center py-2 text-gold-400 transition">
+                        <i class="fa-solid fa-house text-lg"></i>
+                        <span class="text-[10px] font-semibold mt-1">Home</span>
+                    </button>
+                    <button onclick="switchTab('reward')" id="nav-reward" class="nav-btn flex flex-col items-center justify-center py-2 text-gray-500 hover:text-gray-300 transition">
+                        <i class="fa-solid fa-gift text-lg"></i>
+                        <span class="text-[10px] font-semibold mt-1">Reward</span>
+                    </button>
+                    <button onclick="switchTab('point')" id="nav-point" class="nav-btn flex flex-col items-center justify-center py-2 text-gray-500 hover:text-gray-300 transition">
+                        <i class="fa-solid fa-star text-lg"></i>
+                        <span class="text-[10px] font-semibold mt-1">Point & Cap</span>
+                    </button>
+                    <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center justify-center py-2 text-gray-500 hover:text-gray-300 transition">
+                        <i class="fa-solid fa-user text-lg"></i>
+                        <span class="text-[10px] font-semibold mt-1">Profile</span>
+                    </button>
+                </div>
+            </nav>
+        </section>
+
+        <!-- STAFF DASHBOARD VIEW -->
+        <section id="staff-dashboard" class="min-h-screen bg-charcoal-950 p-4 md:p-8 hidden">
+            <header class="max-w-7xl mx-auto mb-8 bg-charcoal-900 rounded-3xl p-4 md:p-6 border border-coffee-400/20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-coffee-800 to-gold-500 flex items-center justify-center overflow-hidden shadow-lg">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKNTcswI0MKvgwch0V6Lal3qR08ozQYkBACiB7xYPitnVeS5yWka1j3Zg&s=10" alt="Selagi Coffee Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">SELAGI COFFEE ADMIN DASHBOARD</h1>
+                        <p class="text-xs text-gold-400">Sistem Pengurusan Keahlian & Operasi Kaunter</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <span class="px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Staff Online
+                    </span>
+                    <button onclick="logoutStaff()" class="px-4 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-500/30 text-xs font-bold transition flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
+                    </button>
+                </div>
+            </header>
+
+            <div class="max-w-7xl mx-auto space-y-8">
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-charcoal-900 rounded-2xl p-4 border border-gray-800">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Total Customers</p>
+                        <p id="stat-customers" class="text-2xl font-black text-white mt-1">0</p>
+                    </div>
+                    <div class="bg-charcoal-900 rounded-2xl p-4 border border-gray-800">
+                        <p class="text-[10px] font-bold text-gold-400 uppercase">Points Issued</p>
+                        <p id="stat-points" class="text-2xl font-black text-gold-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-charcoal-900 rounded-2xl p-4 border border-gray-800">
+                        <p class="text-[10px] font-bold text-coffee-300 uppercase">Total Caps</p>
+                        <p id="stat-caps" class="text-2xl font-black text-coffee-300 mt-1">0</p>
+                    </div>
+                    <div class="bg-charcoal-900 rounded-2xl p-4 border border-gray-800">
+                        <p class="text-[10px] font-bold text-blue-400 uppercase">Active Rewards</p>
+                        <p id="stat-rewards" class="text-2xl font-black text-blue-400 mt-1">0</p>
+                    </div>
+                    <div class="bg-charcoal-900 rounded-2xl p-4 border border-gray-800 col-span-2 md:col-span-1">
+                        <p class="text-[10px] font-bold text-emerald-400 uppercase">Redeemed Items</p>
+                        <p id="stat-redeemed" class="text-2xl font-black text-emerald-400 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Admin Tabs -->
+                <div class="flex overflow-x-auto gap-2 border-b border-gray-800 pb-2 hide-scrollbar">
+                    <button onclick="switchAdminTab('customers')" id="atab-customers" class="atab-btn px-5 py-2.5 rounded-xl bg-gold-500 text-black font-bold text-xs transition">👥 Customers</button>
+                    <button onclick="switchAdminTab('rewards')" id="atab-rewards" class="atab-btn px-5 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-bold text-xs transition hover:bg-gray-700">🎁 Rewards</button>
+                    <button onclick="switchAdminTab('promotions')" id="atab-promotions" class="atab-btn px-5 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-bold text-xs transition hover:bg-gray-700">📢 Promotions</button>
+                    <button onclick="switchAdminTab('reviews')" id="atab-reviews" class="atab-btn px-5 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-bold text-xs transition hover:bg-gray-700">💬 Reviews</button>
+                </div>
+
+                <!-- ADMIN CUSTOMERS TAB -->
+                <div id="admin-sec-customers" class="admin-sec space-y-4">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <h2 class="text-lg font-bold text-white">Customer Management</h2>
+                        <div class="relative w-full sm:w-72">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                            <input type="text" id="admin-search-customer" oninput="renderAdminCustomers()" placeholder="Cari nama, email atau phone..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500">
+                        </div>
+                    </div>
+
+                    <div class="bg-charcoal-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
+                        <table class="w-full text-left border-collapse min-w-[750px]">
+                            <thead>
+                                <tr class="bg-charcoal-950 text-[11px] text-gray-400 uppercase border-b border-gray-800">
+                                    <th class="p-4">Customer</th>
+                                    <th class="p-4">Email</th>
+                                    <th class="p-4">Phone</th>
+                                    <th class="p-4">Birthday</th>
+                                    <th class="p-4">Points</th>
+                                    <th class="p-4">Caps</th>
+                                    <th class="p-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customer-table" class="divide-y divide-gray-800 text-xs text-gray-300"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ADMIN REWARDS TAB -->
+                <div id="admin-sec-rewards" class="admin-sec space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-white">Reward Management</h2>
+                        <button onclick="openAddRewardModal()" class="px-4 py-2 rounded-xl gold-btn text-xs font-bold shadow">+ Add Reward</button>
+                    </div>
+                    <div id="admin-rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- ADMIN PROMOTIONS TAB -->
+                <div id="admin-sec-promotions" class="admin-sec space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-white">Promotion Management</h2>
+                        <button onclick="openAddPromoModal()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">+ Add Promotion</button>
+                    </div>
+                    <div id="admin-promos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- ADMIN REVIEWS TAB -->
+                <div id="admin-sec-reviews" class="admin-sec space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-white">Customer Reviews</h2>
+                    </div>
+                    <div id="admin-reviews-list" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== MODALS ===== -->
+
+    <!-- Staff Login Modal -->
+    <div id="staff-login-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-gold-400"></i> Staff Portal Login
+                </h3>
+                <button onclick="closeStaffModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-gray-400 mb-4">Akses terhad untuk kakitangan Selagi Coffee sahaja.</p>
+            <form onsubmit="handleStaffLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Staff ID</label>
+                    <input type="text" id="staff-id" required placeholder="admin" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
+                    <input type="password" id="staff-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-gold-500">
+                </div>
+                <p class="text-[10px] text-gray-500 italic">* Demo credentials: ID: admin | Pass: Admin24</p>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeStaffModal()" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Log Masuk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Review Modal -->
+    <div id="review-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="review-modal-title" class="text-base font-bold text-white">Tulis Ulasan</h3>
+                <button onclick="closeModal('review-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveReview(event)" class="space-y-4">
+                <input type="hidden" id="review-edit-id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Penarafan (Rating)</label>
+                    <select id="review-rating" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-gold-400 focus:outline-none focus:border-gold-500 font-bold">
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5 Outstanding)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
+                        <option value="3">⭐⭐⭐ (3/3 Good)</option>
+                        <option value="2">⭐⭐ (2/5 Average)</option>
+                        <option value="1">⭐ (1/5 Needs Improvement)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Ulasan Anda</label>
+                    <textarea id="review-comment" required rows="3" placeholder="Kongsikan pengalaman kopi anda di Selagi Coffee..." class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400"></textarea>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('review-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Hantar Ulasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Profile Edit Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white">Kemaskini Profil</h3>
+                <button onclick="closeModal('edit-profile-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveProfile(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nama Penuh</label>
+                    <input type="text" id="edit-prof-name" required class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-coffee-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">No. Telefon (Read-only)</label>
+                    <input type="text" id="edit-prof-phone" readonly class="w-full px-4 py-2.5 rounded-xl bg-charcoal-950 border border-gray-800 text-sm text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Tarikh Lahir</label>
+                    <input type="date" id="edit-prof-birthday" required class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-coffee-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Kata Laluan Baru (Kosongkan jika kekal)</label>
+                    <input type="password" id="edit-prof-pass" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-coffee-400">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('edit-profile-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl coffee-btn text-xs font-bold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Edit Customer Modal – with Password field -->
+    <div id="admin-edit-customer-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-gold-500/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white">Kelola Pelanggan</h3>
+                <button onclick="closeModal('admin-edit-customer-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAdminSaveCustomer(event)" class="space-y-4">
+                <input type="hidden" id="adm-cust-id">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Nama</label>
+                        <input type="text" id="adm-cust-name" required class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Phone</label>
+                        <input type="text" id="adm-cust-phone" readonly class="w-full px-3 py-2 rounded-xl bg-charcoal-950 border border-gray-800 text-xs text-gray-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Emel</label>
+                    <input type="email" id="adm-cust-email" required class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Tarikh Lahir</label>
+                    <input type="date" id="adm-cust-birthday" required class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Kata Laluan (biarkan kosong jika tidak diubah)</label>
+                    <input type="password" id="adm-cust-password" placeholder="••••••••" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gold-400 mb-1">Jumlah Points</label>
+                        <input type="number" id="adm-cust-points" required min="0" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-coffee-300 mb-1">Minuman Cap (0-10)</label>
+                        <input type="number" id="adm-cust-caps" required min="0" max="10" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2 border-t border-gray-800">
+                    <button type="button" onclick="adminResetCustomerPoints()" class="px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900 text-amber-300 text-[11px] font-medium border border-amber-500/30">Reset Points</button>
+                    <button type="button" onclick="adminResetCustomerCaps()" class="px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900 text-amber-300 text-[11px] font-medium border border-amber-500/30">Reset Caps</button>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('admin-edit-customer-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Add/Edit Reward Modal -->
+    <div id="reward-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="reward-modal-title" class="text-base font-bold text-white">Add Reward</h3>
+                <button onclick="closeModal('reward-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveReward(event)" class="space-y-3">
+                <input type="hidden" id="reward-edit-id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nama Reward</label>
+                    <input type="text" id="r-name" required placeholder="Contoh: Free Coffee" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Penerangan</label>
+                    <input type="text" id="r-desc" required placeholder="Sajian espresso artisan pilihan" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Point Diperlukan</label>
+                    <input type="number" id="r-points" required min="1" placeholder="100" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Image URL (Optional)</label>
+                    <input type="url" id="r-image" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="r-active" checked class="rounded bg-charcoal-900 border-gray-800 text-gold-500 focus:ring-0">
+                    <label for="r-active" class="text-xs text-gray-300 font-medium">Aktifkan Reward Ini</label>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('reward-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Add/Edit Promotion Modal -->
+    <div id="promo-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="promo-modal-title" class="text-base font-bold text-white">Add Promotion</h3>
+                <button onclick="closeModal('promo-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSavePromo(event)" class="space-y-3">
+                <input type="hidden" id="promo-edit-id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Tajuk Promosi</label>
+                    <input type="text" id="p-title" required placeholder="Pistachio Latte is Here" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Keterangan</label>
+                    <input type="text" id="p-desc" required placeholder="Try our newest artisan creation" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Image URL</label>
+                    <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-gray-300 mb-1">Tarikh Mula</label>
+                        <input type="date" id="p-start" required class="w-full px-2.5 py-1.5 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-gray-300 mb-1">Tarikh Tamat</label>
+                        <input type="date" id="p-end" required class="w-full px-2.5 py-1.5 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="p-active" checked class="rounded bg-charcoal-900 border-gray-800 text-coffee-400 focus:ring-0">
+                    <label for="p-active" class="text-xs text-gray-300 font-medium">Aktifkan Promosi Ini</label>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('promo-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl coffee-btn text-xs font-bold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ===== JS APPLICATION LOGIC ===== -->
+    <script>
+        /* ==========================================================================
+           1. LOCAL STORAGE PERSISTENCE & INITIAL DEMO DATA
+           ========================================================================== */
+
+        const STORAGE_KEYS = {
+            CUSTOMERS: 'selagi_customers_db_v1',
+            REWARDS: 'selagi_rewards_db_v1',
+            PROMOTIONS: 'selagi_promotions_db_v1',
+            REVIEWS: 'selagi_reviews_db_v1',
+            REDEMPTIONS: 'selagi_redemptions_db_v1',
+            CURRENT_USER: 'selagi_active_user_v1'
+        };
+
+        function initSeedData() {
+            if (!localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) {
+                const initialCustomers = [{
+                    id: 'cust-1',
+                    name: 'Nafi',
+                    email: 'nafi@selagi.coffee',
+                    phone: '01173108046',
+                    birthday: '1999-01-03',
+                    password: 'password123',
+                    points: 850,
+                    caps: 7,
+                    membership: 'Selagi Coffee Artisan Members',
+                    createdAt: new Date().toISOString(),
+                    pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                }, {
+                    id: 'cust-2',
+                    name: 'Aina Safiah',
+                    email: 'aina@selagi.coffee',
+                    phone: '0123456789',
+                    birthday: '1998-05-15',
+                    password: 'password123',
+                    points: 320,
+                    caps: 4,
+                    membership: 'Selagi Coffee Artisan Members',
+                    createdAt: new Date().toISOString(),
+                    pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                }];
+                localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(initialCustomers));
+            }
+
+            if (!localStorage.getItem(STORAGE_KEYS.REWARDS)) {
+                const initialRewards = [{
+                    id: 'rew-1',
+                    name: 'Free Coffee',
+                    description: 'Segelas espresso artisan atau americano kegemaran anda.',
+                    pointsRequired: 100,
+                    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=60',
+                    active: true
+                }, {
+                    id: 'rew-2',
+                    name: 'Free Donut',
+                    description: 'Donut lembut bersalut coklat premium atau artisanal glaze.',
+                    pointsRequired: 150,
+                    image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=60',
+                    active: true
+                }, {
+                    id: 'rew-3',
+                    name: 'RM5 Discount',
+                    description: 'Baucar RM5 untuk sebarang pesanan di kaunter.',
+                    pointsRequired: 250,
+                    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60',
+                    active: true
+                }, {
+                    id: 'rew-4',
+                    name: 'Premium Coffee',
+                    description: 'Minuman khas Pistachio Latte atau Reserve Pour-Over.',
+                    pointsRequired: 300,
+                    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=60',
+                    active: true
+                }];
+                localStorage.setItem(STORAGE_KEYS.REWARDS, JSON.stringify(initialRewards));
+            }
+
+            if (!localStorage.getItem(STORAGE_KEYS.PROMOTIONS)) {
+                const initialPromos = [{
+                    id: 'promo-1',
+                    title: 'Pistachio Latte is Here',
+                    description: 'Try our newest artisan coffee creation infused with real Mediterranean pistachio.',
+                    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&auto=format&fit=crop&q=60',
+                    startDate: '2026-09-01',
+                    endDate: '2026-10-30',
+                    active: true
+                }, {
+                    id: 'promo-2',
+                    title: 'Double Stamp Tuesday',
+                    description: 'Kumpul 2 cap minuman untuk setiap pembelian minuman saiz Grande setiap hari Selasa!',
+                    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=60',
+                    startDate: '2026-09-01',
+                    endDate: '2026-12-31',
+                    active: true
+                }];
+                localStorage.setItem(STORAGE_KEYS.PROMOTIONS, JSON.stringify(initialPromos));
+            }
+
+            if (!localStorage.getItem(STORAGE_KEYS.REVIEWS)) {
+                const initialReviews = [{
+                    id: 'rev-1',
+                    customerId: 'cust-1',
+                    customerName: 'Nafi',
+                    rating: 5,
+                    comment: 'Pistachio Latte memang padu! Tempat cozy & servis pantas. Cap reward pun mudah dikumpul!',
+                    createdAt: '2026-09-02'
+                }, {
+                    id: 'rev-2',
+                    customerId: 'cust-2',
+                    customerName: 'Aina Safiah',
+                    rating: 5,
+                    comment: 'Suka sangat dengan suasana Selagi Coffee. Kopi sentiasa segar & wangi.',
+                    createdAt: '2026-09-05'
+                }];
+                localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(initialReviews));
+            }
+
+            if (!localStorage.getItem(STORAGE_KEYS.REDEMPTIONS)) {
+                const initialRedemptions = [{
+                    id: 'red-1',
+                    customerId: 'cust-1',
+                    rewardId: 'rew-1',
+                    rewardName: 'Free Coffee',
+                    pointsUsed: 100,
+                    redeemedAt: '2026-08-28 14:30'
+                }];
+                localStorage.setItem(STORAGE_KEYS.REDEMPTIONS, JSON.stringify(initialRedemptions));
+            }
+        }
+
+        function getDB(key) { return JSON.parse(localStorage.getItem(key) || '[]'); }
+
+        function setDB(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
+        /* ==========================================================================
+           2. GLOBAL STATE
+           ========================================================================== */
+
+        let currentUser = null;
+        let confirmActionCallback = null;
+
+        window.onload = function() {
+            initSeedData();
+            checkAutoLogin();
+            if (typeof firebase !== 'undefined' && firebase.analytics) {
+                try {
+                    firebase.analytics().logEvent('page_view', { page_title: 'Selagi Coffee App Loaded' });
+                    console.log('📊 Firebase Analytics event logged.');
+                } catch (e) { console.warn('Analytics event skipped.'); }
+            }
+        };
+
+        function checkAutoLogin() {
+            const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+            if (savedUser) {
+                const userObj = JSON.parse(savedUser);
+                const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+                const updated = customers.find(c => c.id === userObj.id || c.phone === userObj.phone);
+                if (updated) {
+                    currentUser = updated;
+                    showCustomerDashboard();
+                    return;
+                }
+            }
+            showAuthView();
+        }
+
+        function showAuthView() {
+            document.getElementById('auth-view').classList.remove('hidden');
+            document.getElementById('customer-dashboard').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.add('hidden');
+        }
+
+        function showCustomerDashboard() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.add('hidden');
+            document.getElementById('customer-dashboard').classList.remove('hidden');
+            switchTab('home');
+            refreshCustomerUI();
+        }
+
+        function showStaffDashboard() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('customer-dashboard').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.remove('hidden');
+            renderAdminDashboard();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-msg');
+            msg.textContent = message;
+            if (type === 'success') icon.className = 'fa-solid fa-circle-check text-gold-400 text-xl';
+            else if (type === 'error') icon.className = 'fa-solid fa-circle-xmark text-rose-500 text-xl';
+            else icon.className = 'fa-solid fa-circle-info text-coffee-300 text-xl';
+            toast.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        function showConfirmModal(title, description, iconClass, onConfirm) {
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-desc').textContent = description;
+            document.getElementById('confirm-modal-icon').className = iconClass || 'fa-solid fa-circle-question';
+            confirmActionCallback = onConfirm;
+            const modal = document.getElementById('confirm-modal');
+            const card = document.getElementById('confirm-modal-card');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        document.getElementById('confirm-modal-cancel').onclick = function() { closeConfirmModal(); };
+        document.getElementById('confirm-modal-ok').onclick = function() {
+            if (confirmActionCallback) confirmActionCallback();
+            closeConfirmModal();
+        };
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            const card = document.getElementById('confirm-modal-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 200);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           3. AUTHENTICATION – Login (Phone Only) & Register (with Email + Password)
+           ========================================================================== */
+
+        function toggleAuthMode(mode) {
+            const loginBox = document.getElementById('login-box');
+            const regBox = document.getElementById('register-box');
+            if (mode === 'register') {
+                loginBox.classList.add('hidden');
+                regBox.classList.remove('hidden');
+            } else {
+                regBox.classList.add('hidden');
+                loginBox.classList.remove('hidden');
+            }
+        }
+
+        // LOGIN: phone number only – no password check
+        function handleCustomerLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('login-phone').value.trim();
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const user = customers.find(c => c.phone === phone);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+                showToast(`Selamat kembali, ${user.name}!`, 'success');
+                showCustomerDashboard();
+            } else {
+                showToast('Nombor telefon tidak dijumpai. Sila daftar akaun terlebih dahulu.', 'error');
+            }
+        }
+
+        // REGISTER: name, email, phone, birthday, password, confirm
+        function handleCustomerRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const birthday = document.getElementById('reg-birthday').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+            if (password !== confirmPassword) {
+                showToast('Kata laluan tidak sepadan!', 'error');
+                return;
+            }
+
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            if (customers.some(c => c.phone === phone)) {
+                showToast('No. telefon telah mendaftar. Sila Log Masuk.', 'error');
+                return;
+            }
+            if (customers.some(c => c.email === email)) {
+                showToast('Emel telah digunakan. Sila gunakan emel lain.', 'error');
+                return;
+            }
+
+            const expiryDate = new Date();
+            expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+
+            const newUser = {
+                id: 'cust-' + Date.now(),
+                name: name,
+                email: email,
+                phone: phone,
+                birthday: birthday,
+                password: password,
+                points: 0,
+                caps: 0,
+                membership: 'Selagi Coffee Artisan Members',
+                createdAt: new Date().toISOString(),
+                pointExpiry: expiryDate.toISOString()
+            };
+
+            customers.push(newUser);
+            setDB(STORAGE_KEYS.CUSTOMERS, customers);
+
+            currentUser = newUser;
+            localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
+
+            showToast('Selamat datang ke Selagi Coffee Artisan Members!', 'success');
+            showCustomerDashboard();
+        }
+
+        function confirmCustomerLogout() {
+            showConfirmModal(
+                'Log Keluar',
+                'Adakah anda pasti mahu log keluar daripada akaun keahlian?',
+                'fa-solid fa-right-from-bracket text-rose-400',
+                function() {
+                    currentUser = null;
+                    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+                    showAuthView();
+                    showToast('Anda telah berjaya log keluar.', 'info');
+                }
+            );
+        }
+
+        /* ==========================================================================
+           4. CUSTOMER TAB SWITCHING & RENDERING
+           ========================================================================== */
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-gold-400');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-500');
+                activeBtn.classList.add('text-gold-400');
+            }
+            if (tabName === 'home') renderHomeTab();
+            if (tabName === 'reward') renderRewardsTab();
+            if (tabName === 'point') renderPointCapTab();
+            if (tabName === 'profile') renderProfileTab();
+        }
+
+        function refreshCustomerUI() {
+            if (!currentUser) return;
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const freshUser = customers.find(c => c.id === currentUser.id);
+            if (freshUser) {
+                currentUser = freshUser;
+                localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(freshUser));
+            }
+            document.getElementById('dash-greeting-name').textContent = currentUser.name.split(' ')[0];
+            document.getElementById('dash-card-name').textContent = currentUser.name;
+            document.getElementById('dash-card-phone').textContent = currentUser.phone;
+            document.getElementById('dash-card-points').textContent = currentUser.points;
+            document.getElementById('dash-card-caps').textContent = currentUser.caps;
+            if (currentUser.caps >= 10) { handleCapAchievement(); }
+        }
+
+        function handleCapAchievement() {
+            showConfirmModal(
+                '🎉 TAHNIAH! 10 CAP DICAPAI',
+                'Anda telah melengkapkan 10 Cap Minuman! Cap anda telah di-reset kepada 0 dan ganjaran khas telah dibuka.',
+                'fa-solid fa-gift text-gold-400',
+                function() {
+                    const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+                    const idx = customers.findIndex(c => c.id === currentUser.id);
+                    if (idx !== -1) {
+                        customers[idx].caps = 0;
+                        setDB(STORAGE_KEYS.CUSTOMERS, customers);
+                        currentUser = customers[idx];
+                        refreshCustomerUI();
+                    }
+                }
+            );
+        }
+
+        function renderHomeTab() {
+            refreshCustomerUI();
+            const promos = getDB(STORAGE_KEYS.PROMOTIONS).filter(p => p.active);
+            const promoContainer = document.getElementById('home-promotions-list');
+            promoContainer.innerHTML = '';
+            if (promos.length === 0) {
+                promoContainer.innerHTML =
+                    `<div class="p-4 text-xs text-gray-500 text-center w-full">Tiada promosi aktif terkini.</div>`;
+            } else {
+                promos.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className =
+                        'min-w-[260px] max-w-[280px] bg-charcoal-900 rounded-2xl overflow-hidden border border-gray-800 shadow-lg snap-start flex-shrink-0';
+                    card.innerHTML = `
+                        <div class="h-32 w-full overflow-hidden relative">
+                            <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x200/2b160b/c89666?text=Selagi+Coffee'">
+                            <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/70 text-[9px] text-gold-400 font-bold tracking-wider uppercase backdrop-blur-sm">PROMO</span>
+                        </div>
+                        <div class="p-3.5 space-y-1">
+                            <h4 class="text-xs font-bold text-white line-clamp-1">${p.title}</h4>
+                            <p class="text-[11px] text-gray-400 line-clamp-2">${p.description}</p>
+                            <p class="text-[9px] text-coffee-400 font-medium pt-1"><i class="fa-regular fa-calendar"></i> ${p.startDate} - ${p.endDate}</p>
+                        </div>
+                    `;
+                    promoContainer.appendChild(card);
+                });
+            }
+            renderHomeReviews();
+        }
+
+        function renderHomeReviews() {
+            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const container = document.getElementById('home-reviews-list');
+            container.innerHTML = '';
+            if (reviews.length === 0) {
+                container.innerHTML =
+                    `<div class="p-4 text-xs text-gray-500 text-center glass-panel rounded-2xl">Jadilah member pertama memberikan ulasan!</div>`;
+                return;
+            }
+            reviews.forEach(r => {
+                const isOwn = r.customerId === currentUser.id;
+                const stars = '⭐'.repeat(r.rating);
+                const div = document.createElement('div');
+                div.className = 'glass-panel p-3.5 rounded-2xl border border-white/5 space-y-1.5 relative';
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${r.customerName.charAt(0)}</div>
+                            <div>
+                                <span class="text-xs font-bold text-white">${r.customerName}</span>
+                                ${isOwn ? '<span class="text-[9px] bg-gold-500/20 text-gold-400 px-1.5 py-0.2 rounded ml-1 font-semibold">Anda</span>' : ''}
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-gold-400">${stars}</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed pl-9">${r.comment}</p>
+                    <div class="flex justify-between items-center pl-9 pt-1 text-[9px] text-gray-500">
+                        <span>${r.createdAt}</span>
+                        ${isOwn ? `<button onclick="openEditReviewModal('${r.id}')" class="text-xs text-coffee-300 hover:text-gold-400 font-semibold"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderRewardsTab() {
+            refreshCustomerUI();
+            document.getElementById('reward-user-points').textContent = currentUser.points;
+            const rewards = getDB(STORAGE_KEYS.REWARDS).filter(r => r.active);
+            const grid = document.getElementById('rewards-grid');
+            grid.innerHTML = '';
+            if (rewards.length === 0) {
+                grid.innerHTML =
+                    `<div class="p-6 text-xs text-gray-500 text-center glass-panel rounded-2xl">Tiada ganjaran tersedia buat masa ini.</div>`;
+                return;
+            }
+            rewards.forEach(r => {
+                const canRedeem = currentUser.points >= r.pointsRequired;
+                const card = document.createElement('div');
+                card.className =
+                    'glass-panel p-4 rounded-2xl border border-coffee-400/20 flex gap-4 items-center justify-between shadow-lg';
+                card.innerHTML = `
+                    <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-charcoal-900 border border-gray-800">
+                        <img src="${r.image}" alt="${r.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Reward'">
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        <h4 class="text-sm font-bold text-white">${r.name}</h4>
+                        <p class="text-[11px] text-gray-400 leading-snug">${r.description}</p>
+                        <span class="inline-block text-xs font-bold text-gold-400 pt-0.5"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</span>
+                    </div>
+                    <div>
+                        <button onclick="confirmRedeemReward('${r.id}')" ${!canRedeem ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl ${canRedeem ? 'gold-btn' : 'bg-charcoal-800 text-gray-600 cursor-not-allowed'} text-xs font-bold shadow">REDEEM</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function confirmRedeemReward(rewardId) {
+            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const reward = rewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            if (currentUser.points < reward.pointsRequired) {
+                showToast('Insufficient points.', 'error');
+                return;
+            }
+            showConfirmModal(
+                `Redeem ${reward.name}?`,
+                `${reward.pointsRequired} points will be deducted from your account.`,
+                'fa-solid fa-gift text-gold-400',
+                function() {
+                    const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+                    const idx = customers.findIndex(c => c.id === currentUser.id);
+                    if (idx !== -1) {
+                        customers[idx].points -= reward.pointsRequired;
+                        setDB(STORAGE_KEYS.CUSTOMERS, customers);
+                        currentUser = customers[idx];
+                        const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS);
+                        redemptions.unshift({
+                            id: 'red-' + Date.now(),
+                            customerId: currentUser.id,
+                            rewardId: reward.id,
+                            rewardName: reward.name,
+                            pointsUsed: reward.pointsRequired,
+                            redeemedAt: new Date().toLocaleString('en-GB')
+                        });
+                        setDB(STORAGE_KEYS.REDEMPTIONS, redemptions);
+                        showToast('Reward Redeemed Successfully!', 'success');
+                        renderRewardsTab();
+                    }
+                }
+            );
+        }
+
+        function renderPointCapTab() {
+            refreshCustomerUI();
+            document.getElementById('point-tab-total').textContent = currentUser.points;
+            const expDate = new Date(currentUser.pointExpiry || Date.now());
+            document.getElementById('point-tab-expiry').textContent = expDate.toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const nextGoal = 1000;
+            const pct = Math.min(100, Math.round((currentUser.points / nextGoal) * 100));
+            document.getElementById('point-progress-text').textContent = `${currentUser.points} / ${nextGoal} Points`;
+            document.getElementById('point-progress-bar').style.width = `${pct}%`;
+            document.getElementById('cap-count-badge').textContent = `${currentUser.caps} / 10 CAP`;
+            const stampGrid = document.getElementById('cap-stamp-grid');
+            stampGrid.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const isCollected = i <= currentUser.caps;
+                const stamp = document.createElement('div');
+                stamp.className =
+                    `aspect-square rounded-2xl border ${isCollected ? 'border-gold-500 bg-gradient-to-br from-coffee-800 to-coffee-950 text-gold-400 shadow-lg stamp-pop' : 'border-gray-800 bg-charcoal-900 text-gray-700'} flex flex-col items-center justify-center p-1 relative`;
+                stamp.innerHTML = `
+                    <i class="fa-solid fa-mug-hot ${isCollected ? 'text-lg text-gold-400' : 'text-sm'}"></i>
+                    <span class="text-[9px] font-bold ${isCollected ? 'text-gold-300' : 'text-gray-600'} mt-0.5">${isCollected ? 'COLLECTED' : i}</span>
+                `;
+                stampGrid.appendChild(stamp);
+            }
+        }
+
+        function renderProfileTab() {
+            refreshCustomerUI();
+            document.getElementById('profile-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('profile-membership').textContent = currentUser.membership;
+            document.getElementById('profile-phone').textContent = currentUser.phone;
+            document.getElementById('profile-birthday').textContent = currentUser.birthday || 'Bukan ditetapkan';
+            document.getElementById('profile-point-summary').textContent = `${currentUser.points} Points`;
+            document.getElementById('profile-cap-summary').textContent = `${currentUser.caps} / 10 Caps`;
+            const pointPct = Math.min(100, Math.round((currentUser.points / 1000) * 100));
+            const capPct = Math.min(100, Math.round((currentUser.caps / 10) * 100));
+            document.getElementById('profile-point-bar').style.width = `${pointPct}%`;
+            document.getElementById('profile-cap-bar').style.width = `${capPct}%`;
+            const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS).filter(r => r.customerId === currentUser.id);
+            const historyContainer = document.getElementById('profile-redemptions-list');
+            historyContainer.innerHTML = '';
+            if (redemptions.length === 0) {
+                historyContainer.innerHTML =
+                    `<div class="p-4 text-xs text-gray-500 text-center glass-panel rounded-2xl">Tiada sejarah penebusan lagi.</div>`;
+                return;
+            }
+            redemptions.forEach(red => {
+                const div = document.createElement('div');
+                div.className = 'glass-panel p-3 rounded-2xl border border-white/5 flex items-center justify-between text-xs';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-400 flex items-center justify-center"><i class="fa-solid fa-gift"></i></div>
+                        <div>
+                            <p class="font-bold text-white">${red.rewardName}</p>
+                            <p class="text-[10px] text-gray-400">${red.redeemedAt}</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-rose-400">-${red.pointsUsed} PTS</span>
+                `;
+                historyContainer.appendChild(div);
+            });
+        }
+
+        // Review handlers
+        function openAddReviewModal() {
+            document.getElementById('review-edit-id').value = '';
+            document.getElementById('review-modal-title').textContent = 'Tulis Ulasan';
+            document.getElementById('review-comment').value = '';
+            document.getElementById('review-rating').value = '5';
+            document.getElementById('review-modal').classList.remove('hidden');
+        }
+
+        function openEditReviewModal(reviewId) {
+            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const rev = reviews.find(r => r.id === reviewId);
+            if (!rev) return;
+            document.getElementById('review-edit-id').value = rev.id;
+            document.getElementById('review-modal-title').textContent = 'Kemaskini Ulasan';
+            document.getElementById('review-comment').value = rev.comment;
+            document.getElementById('review-rating').value = rev.rating;
+            document.getElementById('review-modal').classList.remove('hidden');
+        }
+
+        function handleSaveReview(e) {
+            e.preventDefault();
+            const revId = document.getElementById('review-edit-id').value;
+            const comment = document.getElementById('review-comment').value.trim();
+            const rating = parseInt(document.getElementById('review-rating').value);
+            let reviews = getDB(STORAGE_KEYS.REVIEWS);
+            if (revId) {
+                const idx = reviews.findIndex(r => r.id === revId);
+                if (idx !== -1 && reviews[idx].customerId === currentUser.id) {
+                    reviews[idx].comment = comment;
+                    reviews[idx].rating = rating;
+                    showToast('Ulasan dikemaskini!', 'success');
+                }
+            } else {
+                reviews.unshift({
+                    id: 'rev-' + Date.now(),
+                    customerId: currentUser.id,
+                    customerName: currentUser.name,
+                    rating: rating,
+                    comment: comment,
+                    createdAt: new Date().toISOString().split('T')[0]
+                });
+                showToast('Terima kasih atas ulasan anda!', 'success');
+            }
+            setDB(STORAGE_KEYS.REVIEWS, reviews);
+            closeModal('review-modal');
+            renderHomeReviews();
+        }
+
+        // Profile edit
+        function openEditProfileModal() {
+            document.getElementById('edit-prof-name').value = currentUser.name;
+            document.getElementById('edit-prof-phone').value = currentUser.phone;
+            document.getElementById('edit-prof-birthday').value = currentUser.birthday || '';
+            document.getElementById('edit-prof-pass').value = '';
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            const name = document.getElementById('edit-prof-name').value.trim();
+            const birthday = document.getElementById('edit-prof-birthday').value;
+            const newPass = document.getElementById('edit-prof-pass').value;
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const idx = customers.findIndex(c => c.id === currentUser.id);
+            if (idx !== -1) {
+                customers[idx].name = name;
+                customers[idx].birthday = birthday;
+                if (newPass) customers[idx].password = newPass;
+                setDB(STORAGE_KEYS.CUSTOMERS, customers);
+                currentUser = customers[idx];
+                showToast('Profil berjaya dikemaskini!', 'success');
+                closeModal('edit-profile-modal');
+                renderProfileTab();
+            }
+        }
+
+        /* ==========================================================================
+           5. STAFF / ADMIN DASHBOARD
+           ========================================================================== */
+
+        function showStaffLoginModal() {
+            document.getElementById('staff-id').value = '';
+            document.getElementById('staff-password').value = '';
+            document.getElementById('staff-login-modal').classList.remove('hidden');
+        }
+
+        function closeStaffModal() {
+            document.getElementById('staff-login-modal').classList.add('hidden');
+        }
+
+        function handleStaffLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('staff-id').value.trim();
+            const pass = document.getElementById('staff-password').value;
+            if (id === 'admin' && pass === 'Admin24') {
+                closeStaffModal();
+                showToast('Akses Admin Dibenarkan.', 'success');
+                showStaffDashboard();
+            } else {
+                showToast('Staff ID atau Password Salah!', 'error');
+            }
+        }
+
+        function logoutStaff() {
+            showAuthView();
+            showToast('Keluar dari portal Admin.', 'info');
+        }
+
+        function switchAdminTab(secName) {
+            document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`admin-sec-${secName}`).classList.remove('hidden');
+            document.querySelectorAll('.atab-btn').forEach(btn => {
+                btn.className =
+                    'atab-btn px-5 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-bold text-xs transition hover:bg-gray-700';
+            });
+            const activeBtn = document.getElementById(`atab-${secName}`);
+            if (activeBtn) {
+                activeBtn.className = 'atab-btn px-5 py-2.5 rounded-xl bg-gold-500 text-black font-bold text-xs transition';
+            }
+            if (secName === 'customers') renderAdminCustomers();
+            if (secName === 'rewards') renderAdminRewards();
+            if (secName === 'promotions') renderAdminPromotions();
+            if (secName === 'reviews') renderAdminReviews();
+        }
+
+        function renderAdminDashboard() {
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS);
+            const totalPts = customers.reduce((acc, c) => acc + (c.points || 0), 0);
+            const totalCaps = customers.reduce((acc, c) => acc + (c.caps || 0), 0);
+            document.getElementById('stat-customers').textContent = customers.length;
+            document.getElementById('stat-points').textContent = totalPts;
+            document.getElementById('stat-caps').textContent = totalCaps;
+            document.getElementById('stat-rewards').textContent = rewards.filter(r => r.active).length;
+            document.getElementById('stat-redeemed').textContent = redemptions.length;
+            switchAdminTab('customers');
+        }
+
+        // ---- Admin Customers ----
+        function renderAdminCustomers() {
+            const query = (document.getElementById('admin-search-customer').value || '').toLowerCase();
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS).filter(c =>
+                c.name.toLowerCase().includes(query) ||
+                c.email.toLowerCase().includes(query) ||
+                c.phone.includes(query)
+            );
+            const tbody = document.getElementById('admin-customer-table');
+            tbody.innerHTML = '';
+            if (customers.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="7" class="p-6 text-center text-gray-500 text-xs">Tiada rekod pelanggan dijumpai.</td></tr>`;
+                return;
+            }
+            customers.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-charcoal-800/50 transition';
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${c.name.charAt(0)}</div>
+                        ${c.name}
+                    </td>
+                    <td class="p-4 text-gray-400 truncate max-w-[120px]">${c.email || '-'}</td>
+                    <td class="p-4 font-mono text-gray-400">${c.phone}</td>
+                    <td class="p-4 text-gray-400">${c.birthday || '-'}</td>
+                    <td class="p-4 font-bold text-gold-400">${c.points} PTS</td>
+                    <td class="p-4 font-bold text-coffee-300">${c.caps} / 10</td>
+                    <td class="p-4 text-center flex items-center justify-center gap-1.5 flex-wrap">
+                        <button onclick="openAdminCustomerModal('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-gold-500/20 text-gold-400 hover:bg-gold-500/30 text-[10px] font-semibold transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="adminDeleteCustomer('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[10px] font-semibold transition"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Admin delete customer
+        function adminDeleteCustomer(custId) {
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const cust = customers.find(c => c.id === custId);
+            if (!cust) return;
+            showConfirmModal(
+                'Hapus Pelanggan',
+                `Adakah anda pasti mahu menghapuskan pelanggan "${cust.name}" (${cust.phone})? Tindakan ini tidak boleh dibatalkan.`,
+                'fa-solid fa-trash text-rose-400',
+                function() {
+                    let updated = getDB(STORAGE_KEYS.CUSTOMERS).filter(c => c.id !== custId);
+                    setDB(STORAGE_KEYS.CUSTOMERS, updated);
+                    // Also remove their reviews and redemptions
+                    let reviews = getDB(STORAGE_KEYS.REVIEWS).filter(r => r.customerId !== custId);
+                    setDB(STORAGE_KEYS.REVIEWS, reviews);
+                    let redemptions = getDB(STORAGE_KEYS.REDEMPTIONS).filter(r => r.customerId !== custId);
+                    setDB(STORAGE_KEYS.REDEMPTIONS, redemptions);
+                    showToast(`Pelanggan ${cust.name} telah dihapuskan.`, 'info');
+                    renderAdminDashboard();
+                }
+            );
+        }
+
+        // Admin edit customer (with password field)
+        function openAdminCustomerModal(custId) {
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const cust = customers.find(c => c.id === custId);
+            if (!cust) return;
+            document.getElementById('adm-cust-id').value = cust.id;
+            document.getElementById('adm-cust-name').value = cust.name;
+            document.getElementById('adm-cust-phone').value = cust.phone;
+            document.getElementById('adm-cust-email').value = cust.email || '';
+            document.getElementById('adm-cust-birthday').value = cust.birthday || '';
+            document.getElementById('adm-cust-points').value = cust.points;
+            document.getElementById('adm-cust-caps').value = cust.caps;
+            document.getElementById('adm-cust-password').value = '';
+            document.getElementById('admin-edit-customer-modal').classList.remove('hidden');
+        }
+
+        function handleAdminSaveCustomer(e) {
+            e.preventDefault();
+            const id = document.getElementById('adm-cust-id').value;
+            const name = document.getElementById('adm-cust-name').value.trim();
+            const email = document.getElementById('adm-cust-email').value.trim();
+            const birthday = document.getElementById('adm-cust-birthday').value;
+            const points = parseInt(document.getElementById('adm-cust-points').value);
+            const caps = parseInt(document.getElementById('adm-cust-caps').value);
+            const newPass = document.getElementById('adm-cust-password').value;
+
+            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const idx = customers.findIndex(c => c.id === id);
+            if (idx !== -1) {
+                customers[idx].name = name;
+                customers[idx].email = email;
+                customers[idx].birthday = birthday;
+                customers[idx].points = points;
+                customers[idx].caps = caps;
+                if (newPass) customers[idx].password = newPass;
+                setDB(STORAGE_KEYS.CUSTOMERS, customers);
+                showToast('Data pelanggan dikemaskini!', 'success');
+                closeModal('admin-edit-customer-modal');
+                renderAdminDashboard();
+            }
+        }
+
+        function adminResetCustomerPoints() {
+            document.getElementById('adm-cust-points').value = 0;
+            showToast('Point telah di-reset kepada 0 pada borang.', 'info');
+        }
+
+        function adminResetCustomerCaps() {
+            document.getElementById('adm-cust-caps').value = 0;
+            showToast('Cap telah di-reset kepada 0 pada borang.', 'info');
+        }
+
+        // ---- Admin Rewards ----
+        function renderAdminRewards() {
+            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const container = document.getElementById('admin-rewards-grid');
+            container.innerHTML = '';
+            rewards.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-3 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-white text-sm">${r.name}</h4>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.active ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-500'}">${r.active ? 'Active' : 'Disabled'}</span>
+                        </div>
+                        <p class="text-xs text-gray-400">${r.description}</p>
+                        <p class="text-xs font-bold text-gold-400"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</p>
+                    </div>
+                    <div class="flex gap-2 pt-2 border-t border-gray-800">
+                        <button onclick="openEditRewardModal('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
+                        <button onclick="deleteReward('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddRewardModal() {
+            document.getElementById('reward-edit-id').value = '';
+            document.getElementById('reward-modal-title').textContent = 'Add Reward';
+            document.getElementById('r-name').value = '';
+            document.getElementById('r-desc').value = '';
+            document.getElementById('r-points').value = '100';
+            document.getElementById('r-image').value = '';
+            document.getElementById('r-active').checked = true;
+            document.getElementById('reward-modal').classList.remove('hidden');
+        }
+
+        function openEditRewardModal(rewardId) {
+            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const r = rewards.find(item => item.id === rewardId);
+            if (!r) return;
+            document.getElementById('reward-edit-id').value = r.id;
+            document.getElementById('reward-modal-title').textContent = 'Edit Reward';
+            document.getElementById('r-name').value = r.name;
+            document.getElementById('r-desc').value = r.description;
+            document.getElementById('r-points').value = r.pointsRequired;
+            document.getElementById('r-image').value = r.image || '';
+            document.getElementById('r-active').checked = r.active;
+            document.getElementById('reward-modal').classList.remove('hidden');
+        }
+
+        function handleSaveReward(e) {
+            e.preventDefault();
+            const id = document.getElementById('reward-edit-id').value;
+            const name = document.getElementById('r-name').value.trim();
+            const desc = document.getElementById('r-desc').value.trim();
+            const points = parseInt(document.getElementById('r-points').value);
+            const image = document.getElementById('r-image').value.trim() ||
+                'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500';
+            const active = document.getElementById('r-active').checked;
+            let rewards = getDB(STORAGE_KEYS.REWARDS);
+            if (id) {
+                const idx = rewards.findIndex(r => r.id === id);
+                if (idx !== -1) { rewards[idx] = { id, name, description: desc, pointsRequired: points, image, active }; }
+            } else {
+                rewards.push({ id: 'rew-' + Date.now(), name, description: desc, pointsRequired: points, image,
+                    active });
+            }
+            setDB(STORAGE_KEYS.REWARDS, rewards);
+            showToast('Reward disimpan!', 'success');
+            closeModal('reward-modal');
+            renderAdminRewards();
+        }
+
+        function deleteReward(rewardId) {
+            showConfirmModal(
+                'Padam Reward',
+                'Adakah anda pasti mahu memadam reward ini?',
+                'fa-solid fa-trash text-rose-400',
+                function() {
+                    let rewards = getDB(STORAGE_KEYS.REWARDS).filter(r => r.id !== rewardId);
+                    setDB(STORAGE_KEYS.REWARDS, rewards);
+                    showToast('Reward dipadam.', 'info');
+                    renderAdminRewards();
+                }
+            );
+        }
+
+        // ---- Admin Promotions ----
+        function renderAdminPromotions() {
+            const promos = getDB(STORAGE_KEYS.PROMOTIONS);
+            const container = document.getElementById('admin-promos-grid');
+            container.innerHTML = '';
+            promos.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-3';
+                card.innerHTML = `
+                    <div class="flex gap-4 items-center">
+                        <img src="${p.image}" class="w-20 h-20 rounded-xl object-cover bg-black" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Promo'">
+                        <div class="space-y-1 flex-1">
+                            <h4 class="font-bold text-white text-sm">${p.title}</h4>
+                            <p class="text-xs text-gray-400 line-clamp-2">${p.description}</p>
+                            <p class="text-[10px] text-gold-400">${p.startDate} hingga ${p.endDate}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 pt-2 border-t border-gray-800">
+                        <button onclick="openEditPromoModal('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
+                        <button onclick="deletePromo('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddPromoModal() {
+            document.getElementById('promo-edit-id').value = '';
+            document.getElementById('promo-modal-title').textContent = 'Add Promotion';
+            document.getElementById('p-title').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('p-image').value = '';
+            document.getElementById('p-start').value = new Date().toISOString().split('T')[0];
+            document.getElementById('p-end').value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
+                .split('T')[0];
+            document.getElementById('p-active').checked = true;
+            document.getElementById('promo-modal').classList.remove('hidden');
+        }
+
+        function openEditPromoModal(promoId) {
+            const promos = getDB(STORAGE_KEYS.PROMOTIONS);
+            const p = promos.find(item => item.id === promoId);
+            if (!p) return;
+            document.getElementById('promo-edit-id').value = p.id;
+            document.getElementById('promo-modal-title').textContent = 'Edit Promotion';
+            document.getElementById('p-title').value = p.title;
+            document.getElementById('p-desc').value = p.description;
+            document.getElementById('p-image').value = p.image;
+            document.getElementById('p-start').value = p.startDate;
+            document.getElementById('p-end').value = p.endDate;
+            document.getElementById('p-active').checked = p.active;
+            document.getElementById('promo-modal').classList.remove('hidden');
+        }
+
+        function handleSavePromo(e) {
+            e.preventDefault();
+            const id = document.getElementById('promo-edit-id').value;
+            const title = document.getElementById('p-title').value.trim();
+            const desc = document.getElementById('p-desc').value.trim();
+            const image = document.getElementById('p-image').value.trim() ||
+                'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600';
+            const startDate = document.getElementById('p-start').value;
+            const endDate = document.getElementById('p-end').value;
+            const active = document.getElementById('p-active').checked;
+            let promos = getDB(STORAGE_KEYS.PROMOTIONS);
+            if (id) {
+                const idx = promos.findIndex(p => p.id === id);
+                if (idx !== -1) { promos[idx] = { id, title, description: desc, image, startDate, endDate, active }; }
+            } else {
+                promos.push({ id: 'promo-' + Date.now(), title, description: desc, image, startDate, endDate,
+                    active });
+            }
+            setDB(STORAGE_KEYS.PROMOTIONS, promos);
+            showToast('Promosi disimpan!', 'success');
+            closeModal('promo-modal');
+            renderAdminPromotions();
+        }
+
+        function deletePromo(promoId) {
+            showConfirmModal(
+                'Padam Promosi',
+                'Adakah anda pasti mahu memadam promosi ini?',
+                'fa-solid fa-trash text-rose-400',
+                function() {
+                    let promos = getDB(STORAGE_KEYS.PROMOTIONS).filter(p => p.id !== promoId);
+                    setDB(STORAGE_KEYS.PROMOTIONS, promos);
+                    showToast('Promosi dipadam.', 'info');
+                    renderAdminPromotions();
+                }
+            );
+        }
+
+        // ---- Admin Reviews ----
+        function renderAdminReviews() {
+            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const container = document.getElementById('admin-reviews-list');
+            container.innerHTML = '';
+            reviews.forEach(r => {
+                const div = document.createElement('div');
+                div.className =
+                    'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-2 flex items-center justify-between';
+                div.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-white text-xs">${r.customerName}</span>
+                            <span class="text-[10px] text-gold-400">${'⭐'.repeat(r.rating)}</span>
+                        </div>
+                        <p class="text-xs text-gray-300">${r.comment}</p>
+                        <p class="text-[10px] text-gray-500">${r.createdAt}</p>
+                    </div>
+                    <button onclick="adminDeleteReview('${r.id}')" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Padam</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function adminDeleteReview(revId) {
+            showConfirmModal(
+                'Padam Ulasan',
+                'Adakah anda pasti mahu memadam ulasan pelanggan ini?',
+                'fa-solid fa-trash text-rose-400',
+                function() {
+                    let reviews = getDB(STORAGE_KEYS.REVIEWS).filter(r => r.id !== revId);
+                    setDB(STORAGE_KEYS.REVIEWS, reviews);
+                    showToast('Ulasan dipadam oleh admin.', 'info');
+                    renderAdminReviews();
+                }
+            );
+        }
+    </script>
+
+</body>
+</html>
