@@ -11,7 +11,6 @@
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
     </script>
-    <!-- ✅ TAMBAH SDK AUTH -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js">
@@ -197,6 +196,50 @@
         #toast {
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
+
+        /* Password strength indicator */
+        .strength-bar {
+            height: 3px;
+            border-radius: 4px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        /* Staff FAB */
+        .staff-fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 60;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37 0%, #b89224 100%);
+            color: #121212;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+        .staff-fab:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 28px rgba(212, 175, 55, 0.6);
+        }
+        .staff-fab i {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        /* For mobile, adjust */
+        @media (max-width: 480px) {
+            .staff-fab {
+                bottom: 90px;
+                right: 16px;
+                width: 52px;
+                height: 52px;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body class="bg-charcoal-950 text-gray-100 font-sans antialiased min-h-screen selection:bg-coffee-400 selection:text-black">
@@ -238,25 +281,40 @@
                 <p class="text-[10px] tracking-widest text-gold-400 font-semibold uppercase mt-1">Artisan Members Club</p>
             </div>
 
-            <!-- LOGIN FORM – Phone Only (with password prompt) -->
+            <!-- LOGIN FORM – Email + Password (more secure) -->
             <div id="login-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-white">Welcome Back 👋</h2>
-                    <p class="text-xs text-gray-400 mt-1">Log masuk menggunakan nombor telefon anda.</p>
+                    <p class="text-xs text-gray-400 mt-1">Log masuk menggunakan emel & kata laluan.</p>
                 </div>
 
                 <form id="form-login" onsubmit="handleCustomerLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1.5">No. Telefon</label>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1.5">Alamat Emel</label>
                         <div class="relative">
-                            <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-                            <input type="tel" id="login-phone" required placeholder="01173108046" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                            <input type="email" id="login-email" required placeholder="nafi@selagi.coffee" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition" autocomplete="email">
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-1.5"><i class="fa-regular fa-circle-check text-emerald-500"></i> Log masuk dengan nombor telefon — anda akan diminta kata laluan.</p>
                     </div>
 
-                    <div class="flex justify-end">
-                        <button type="button" onclick="showToast('Sila hubungi barista di kaunter untuk bantuan log masuk.', 'info')" class="text-xs text-coffee-400 hover:text-gold-400 transition">Masalah Log Masuk?</button>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1.5">Kata Laluan</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition" autocomplete="current-password">
+                            <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition">
+                                <i class="fa-solid fa-eye" id="login-password-toggle"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <button type="button" onclick="handleForgotPassword()" class="text-xs text-coffee-400 hover:text-gold-400 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-key"></i> Lupa Kata Laluan?
+                        </button>
+                        <button type="button" onclick="showToast('Sila hubungi barista di kaunter untuk bantuan log masuk.', 'info')" class="text-xs text-gray-500 hover:text-gray-300 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-question"></i> Bantuan
+                        </button>
                     </div>
 
                     <div class="pt-2 space-y-2.5">
@@ -296,12 +354,31 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Kata Laluan</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                        <div class="relative">
+                            <input type="password" id="reg-password" required placeholder="••••••••" minlength="6" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                            <button type="button" onclick="togglePasswordVisibility('reg-password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition">
+                                <i class="fa-solid fa-eye" id="reg-password-toggle"></i>
+                            </button>
+                        </div>
+                        <div class="mt-1.5">
+                            <div class="flex items-center gap-2">
+                                <div class="strength-bar h-1 flex-1 bg-gray-700 rounded-full overflow-hidden">
+                                    <div id="reg-pass-strength" class="h-full w-0 bg-red-500 transition-all duration-300 rounded-full"></div>
+                                </div>
+                                <span id="reg-pass-label" class="text-[10px] text-gray-500 min-w-[60px] text-right">lemah</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Sahkan Kata Laluan</label>
-                        <input type="password" id="reg-confirm-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                        <div class="relative">
+                            <input type="password" id="reg-confirm-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
+                            <button type="button" onclick="togglePasswordVisibility('reg-confirm-password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition">
+                                <i class="fa-solid fa-eye" id="reg-confirm-password-toggle"></i>
+                            </button>
+                        </div>
+                        <p id="reg-pass-match" class="text-[10px] mt-1 hidden"></p>
                     </div>
 
                     <div class="pt-2 space-y-2">
@@ -554,6 +631,11 @@
                     </button>
                 </div>
             </nav>
+
+            <!-- STAFF FAB (Floating Action Button) -->
+            <button id="staffFab" class="staff-fab" onclick="handleStaffFabClick()" title="Staff Access">
+                <i class="fa-solid fa-key"></i>
+            </button>
         </section>
 
         <!-- STAFF DASHBOARD VIEW -->
@@ -694,6 +776,29 @@
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeStaffModal()" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
                     <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Log Masuk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Staff PIN Modal (FAB) -->
+    <div id="staff-pin-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-key text-gold-400"></i> Staff Authorization
+                </h3>
+                <button onclick="closeModal('staff-pin-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-gray-400 mb-4">Masukkan PIN staff yang sah untuk akses ke panel admin.</p>
+            <form onsubmit="handleStaffPin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">PIN Staff</label>
+                    <input type="password" id="staff-pin-input" required placeholder="Masukkan PIN 4-6 digit" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white text-center tracking-widest focus:outline-none focus:border-gold-500" maxlength="6" inputmode="numeric">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('staff-pin-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Sahkan</button>
                 </div>
             </form>
         </div>
@@ -1003,8 +1108,8 @@
                         email: user.email,
                         phone: user.phoneNumber || '',
                         birthday: '',
-                        points: 0,
-                        caps: 0,
+                        points: 10, // Welcome bonus: 10 points
+                        caps: 1, // Welcome bonus: 1 cap
                         membership: 'Selagi Coffee Artisan Members',
                         createdAt: new Date().toISOString(),
                         pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
@@ -1014,6 +1119,7 @@
                     await updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
                     currentCustomerData = { id: newId, ...newCustomer };
                     localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
+                    showToast('🎉 Selamat datang! Anda mendapat 10 point & 1 cap percuma!', 'success');
                     showCustomerDashboard();
                 }
             } else {
@@ -1028,6 +1134,8 @@
         window.onload = function() {
             // Load initial data from Firebase
             loadAllData();
+            // Password strength & matching listeners
+            setupPasswordValidation();
         };
 
         function loadAllData() {
@@ -1245,7 +1353,7 @@
         }
 
         /* ==========================================================================
-           3. AUTHENTICATION – Using Firebase Auth
+           3. AUTHENTICATION – Using Firebase Auth (Email + Password)
            ========================================================================== */
 
         function toggleAuthMode(mode) {
@@ -1260,32 +1368,45 @@
             }
         }
 
-        // LOGIN: phone + password using Firebase Auth
+        // LOGIN: Email + Password using Firebase Auth
         function handleCustomerLogin(e) {
             e.preventDefault();
-            const phone = document.getElementById('login-phone').value.trim();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
 
-            // Find customer by phone
-            const customers = getCachedData(customersCache);
-            const customer = customers.find(c => c.phone === phone);
-
-            if (!customer) {
-                showToast('Nombor telefon tidak dijumpai. Sila daftar akaun terlebih dahulu.', 'error');
+            if (!email || !password) {
+                showToast('Sila masukkan emel dan kata laluan.', 'error');
                 return;
             }
 
-            // Prompt for password
-            const password = prompt('Sila masukkan kata laluan untuk ' + customer.email + ':');
-            if (!password) return;
-
-            // Sign in with email and password
-            firebase.auth().signInWithEmailAndPassword(customer.email, password)
+            // Sign in with Firebase Auth
+            firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    showToast(`Selamat kembali, ${customer.name}!`, 'success');
-                    // onAuthStateChanged will handle the rest
+                    // Success - onAuthStateChanged will handle navigation
+                    showToast('Log masuk berjaya!', 'success');
                 })
                 .catch((error) => {
-                    showToast('Kata laluan salah atau ralat: ' + error.message, 'error');
+                    let msg = 'Ralat log masuk. Sila cuba lagi.';
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            msg = 'Emel tidak berdaftar. Sila daftar akaun.';
+                            break;
+                        case 'auth/wrong-password':
+                            msg = 'Kata laluan salah. Sila cuba lagi.';
+                            break;
+                        case 'auth/invalid-email':
+                            msg = 'Format emel tidak sah.';
+                            break;
+                        case 'auth/too-many-requests':
+                            msg = 'Terlalu banyak percubaan. Sila cuba sebentar lagi.';
+                            break;
+                        case 'auth/user-disabled':
+                            msg = 'Akaun ini telah dilumpuhkan. Hubungi barista.';
+                            break;
+                        default:
+                            msg = error.message;
+                    }
+                    showToast(msg, 'error');
                     console.error(error);
                 });
         }
@@ -1305,6 +1426,11 @@
                 return;
             }
 
+            if (password.length < 6) {
+                showToast('Kata laluan mesti sekurang-kurangnya 6 aksara.', 'error');
+                return;
+            }
+
             const customers = getCachedData(customersCache);
             if (customers.some(c => c.phone === phone)) {
                 showToast('No. telefon telah mendaftar. Sila Log Masuk.', 'error');
@@ -1318,14 +1444,12 @@
             // Create user with Firebase Auth
             firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // User created in Auth
                     const user = userCredential.user;
-
                     // Update profile with display name
                     return user.updateProfile({
                         displayName: name
                     }).then(() => {
-                        // Now save to database
+                        // Now save to database with welcome bonus
                         const expiryDate = new Date();
                         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
@@ -1335,8 +1459,8 @@
                             email: email,
                             phone: phone,
                             birthday: birthday,
-                            points: 0,
-                            caps: 0,
+                            points: 10, // Welcome bonus 10 points
+                            caps: 1, // Welcome bonus 1 cap
                             membership: 'Selagi Coffee Artisan Members',
                             createdAt: new Date().toISOString(),
                             pointExpiry: expiryDate.toISOString()
@@ -1348,13 +1472,137 @@
                     });
                 })
                 .then(() => {
-                    showToast('Selamat datang ke Selagi Coffee Artisan Members!', 'success');
+                    showToast('🎉 Selamat datang! Anda mendapat 10 point & 1 cap percuma!', 'success');
                     // onAuthStateChanged will handle the rest
                 })
                 .catch((error) => {
-                    showToast('Ralat pendaftaran: ' + error.message, 'error');
+                    let msg = 'Ralat pendaftaran. Sila cuba lagi.';
+                    if (error.code === 'auth/email-already-in-use') {
+                        msg = 'Emel ini telah digunakan. Sila log masuk atau gunakan emel lain.';
+                    } else if (error.code === 'auth/weak-password') {
+                        msg = 'Kata laluan terlalu lemah. Gunakan 6 aksara atau lebih.';
+                    }
+                    showToast(msg, 'error');
                     console.error(error);
                 });
+        }
+
+        // Forgot Password – Send reset email
+        function handleForgotPassword() {
+            const email = document.getElementById('login-email').value.trim();
+            if (!email) {
+                showToast('Sila masukkan emel anda untuk reset kata laluan.', 'info');
+                document.getElementById('login-email').focus();
+                return;
+            }
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => {
+                    showToast(`📧 Emel reset kata laluan telah dihantar ke ${email}. Sila semak inbox/spam.`, 'success');
+                })
+                .catch((error) => {
+                    let msg = 'Ralat menghantar emel reset. Sila cuba lagi.';
+                    if (error.code === 'auth/user-not-found') {
+                        msg = 'Emel tidak berdaftar. Sila daftar akaun.';
+                    }
+                    showToast(msg, 'error');
+                    console.error(error);
+                });
+        }
+
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(inputId + '-toggle');
+            if (!input || !toggle) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                toggle.className = 'fa-solid fa-eye';
+            }
+        }
+
+        // Password strength validation for registration
+        function setupPasswordValidation() {
+            const passInput = document.getElementById('reg-password');
+            const confirmInput = document.getElementById('reg-confirm-password');
+            const strengthBar = document.getElementById('reg-pass-strength');
+            const strengthLabel = document.getElementById('reg-pass-label');
+            const matchMsg = document.getElementById('reg-pass-match');
+
+            if (passInput) {
+                passInput.addEventListener('input', function() {
+                    const val = this.value;
+                    let score = 0;
+                    if (val.length >= 6) score++;
+                    if (val.length >= 10) score++;
+                    if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+                    if (/\d/.test(val)) score++;
+                    if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+                    let pct = 0;
+                    let label = 'lemah';
+                    let color = '#ef4444';
+                    if (val.length === 0) {
+                        pct = 0;
+                        label = 'lemah';
+                        color = '#ef4444';
+                    } else if (score <= 1) {
+                        pct = 20;
+                        label = 'lemah';
+                        color = '#ef4444';
+                    } else if (score === 2) {
+                        pct = 40;
+                        label = 'sederhana';
+                        color = '#f59e0b';
+                    } else if (score === 3) {
+                        pct = 60;
+                        label = 'baik';
+                        color = '#3b82f6';
+                    } else if (score === 4) {
+                        pct = 80;
+                        label = 'kuat';
+                        color = '#22c55e';
+                    } else {
+                        pct = 100;
+                        label = 'sangat kuat';
+                        color = '#22c55e';
+                    }
+                    strengthBar.style.width = pct + '%';
+                    strengthBar.style.background = color;
+                    strengthLabel.textContent = label;
+                    strengthLabel.style.color = color;
+
+                    // Check confirm match
+                    if (confirmInput.value.length > 0) {
+                        checkPasswordMatch(passInput.value, confirmInput.value, matchMsg);
+                    }
+                });
+            }
+
+            if (confirmInput) {
+                confirmInput.addEventListener('input', function() {
+                    const pass = document.getElementById('reg-password').value;
+                    checkPasswordMatch(pass, this.value, matchMsg);
+                });
+            }
+        }
+
+        function checkPasswordMatch(pass, confirm, msgEl) {
+            if (confirm.length === 0) {
+                msgEl.classList.add('hidden');
+                return;
+            }
+            if (pass === confirm) {
+                msgEl.textContent = '✅ Kata laluan sepadan.';
+                msgEl.className = 'text-[10px] mt-1 text-emerald-400';
+                msgEl.classList.remove('hidden');
+            } else {
+                msgEl.textContent = '❌ Kata laluan tidak sepadan.';
+                msgEl.className = 'text-[10px] mt-1 text-rose-400';
+                msgEl.classList.remove('hidden');
+            }
         }
 
         function confirmCustomerLogout() {
@@ -1416,7 +1664,6 @@
 
         function refreshCustomerUI() {
             if (!currentCustomerData) {
-                // Try to get from localStorage
                 const saved = localStorage.getItem('selagi_active_user_v1');
                 if (saved) {
                     currentCustomerData = JSON.parse(saved);
@@ -1424,7 +1671,6 @@
                     return;
                 }
             }
-            // Refresh from cache
             const customers = getCachedData(customersCache);
             const freshUser = customers.find(c => c.id === currentCustomerData.id);
             if (freshUser) {
@@ -1563,12 +1809,12 @@
             const reward = rewards.find(r => r.id === rewardId);
             if (!reward) return;
             if (currentCustomerData.points < reward.pointsRequired) {
-                showToast('Insufficient points.', 'error');
+                showToast('Point tidak mencukupi.', 'error');
                 return;
             }
             showConfirmModal(
-                `Redeem ${reward.name}?`,
-                `${reward.pointsRequired} points will be deducted from your account.`,
+                `Tebus ${reward.name}?`,
+                `${reward.pointsRequired} points akan ditolak daripada akaun anda.`,
                 'fa-solid fa-gift text-gold-400',
                 function() {
                     const customers = getCachedData(customersCache);
@@ -1579,7 +1825,6 @@
                         updateObj[currentCustomerData.id] = { ...cust };
                         updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
                             currentCustomerData = { id: currentCustomerData.id, ...cust };
-                            // Add redemption
                             const redemptionId = 'red-' + generateId();
                             const redemption = {
                                 customerId: currentCustomerData.id,
@@ -1591,7 +1836,7 @@
                             const redUpdate = {};
                             redUpdate[redemptionId] = redemption;
                             updateCacheAndFirebase(redemptionsCache, DB_REFS.redemptions, redUpdate).then(() => {
-                                showToast('Reward Redeemed Successfully!', 'success');
+                                showToast('Reward berjaya ditebus!', 'success');
                                 renderRewardsTab();
                             });
                         });
@@ -1753,14 +1998,12 @@
                 });
             }
 
-            // Update Firebase Auth display name
             if (currentUser && name) {
                 currentUser.updateProfile({
                     displayName: name
                 }).catch(err => console.warn('Could not update display name:', err));
             }
 
-            // Update password if provided
             if (newPass && currentUser) {
                 currentUser.updatePassword(newPass)
                     .then(() => showToast('Kata laluan dikemaskini!', 'success'))
@@ -1772,6 +2015,30 @@
            5. STAFF / ADMIN DASHBOARD
            ========================================================================== */
 
+        // Staff FAB handler
+        function handleStaffFabClick() {
+            document.getElementById('staff-pin-input').value = '';
+            document.getElementById('staff-pin-modal').classList.remove('hidden');
+        }
+
+        // Staff PIN submission
+        function handleStaffPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('staff-pin-input').value.trim();
+            // Allowed PINs: 9899, 991414, 2024
+            const validPins = ['9899', '991414', '2024'];
+            if (validPins.includes(pin)) {
+                closeModal('staff-pin-modal');
+                showToast('Akses Staff Dibenarkan.', 'success');
+                showStaffDashboard();
+            } else {
+                showToast('PIN tidak sah! Sila cuba lagi.', 'error');
+                document.getElementById('staff-pin-input').value = '';
+                document.getElementById('staff-pin-input').focus();
+            }
+        }
+
+        // Existing staff login modal (for backup)
         function showStaffLoginModal() {
             document.getElementById('staff-id').value = '';
             document.getElementById('staff-password').value = '';
@@ -1868,7 +2135,6 @@
             });
         }
 
-        // Admin delete customer
         function adminDeleteCustomer(custId) {
             const customers = getCachedData(customersCache);
             const cust = customers.find(c => c.id === custId);
@@ -1878,20 +2144,16 @@
                 `Adakah anda pasti mahu menghapuskan pelanggan "${cust.name}" (${cust.phone})? Tindakan ini tidak boleh dibatalkan.`,
                 'fa-solid fa-trash text-rose-400',
                 function() {
-                    // Remove from customers
                     removeFromCacheAndFirebase(customersCache, DB_REFS.customers, custId).then(() => {
-                        // Also remove their reviews
                         const reviews = getCachedData(reviewsCache);
                         const userReviews = reviews.filter(r => r.customerId === custId);
                         let reviewsToRemove = {};
                         userReviews.forEach(r => { reviewsToRemove[r.id] = null; });
-                        // Remove redemptions
                         const redemptions = getCachedData(redemptionsCache);
                         const userRedemptions = redemptions.filter(r => r.customerId === custId);
                         let redemptionsToRemove = {};
                         userRedemptions.forEach(r => { redemptionsToRemove[r.id] = null; });
 
-                        // Update reviews and redemptions
                         const reviewPromises = Object.keys(reviewsToRemove).length > 0 ?
                             Promise.all(Object.keys(reviewsToRemove).map(id =>
                                 removeFromCacheAndFirebase(reviewsCache, DB_REFS.reviews, id)
@@ -1911,7 +2173,6 @@
             );
         }
 
-        // Admin edit customer (with password field)
         function openAdminCustomerModal(custId) {
             const customers = getCachedData(customersCache);
             const cust = customers.find(c => c.id === custId);
@@ -1947,7 +2208,6 @@
                 cust.caps = caps;
                 if (newPass) {
                     cust.password = newPass;
-                    // Also update Firebase Auth password if email matches current user
                     if (currentUser && currentUser.email === email) {
                         currentUser.updatePassword(newPass)
                             .catch(err => console.warn('Could not update password:', err));
