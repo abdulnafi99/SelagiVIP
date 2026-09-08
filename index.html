@@ -231,7 +231,7 @@
             box-shadow: 0 6px 28px rgba(212, 175, 55, 0.6);
         }
         .staff-fab i {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
         /* For mobile, adjust */
         @media (max-width: 480px) {
@@ -258,6 +258,50 @@
         .modal-card.scale-in {
             transform: scale(1) !important;
             opacity: 1 !important;
+        }
+
+        /* Image preview styling */
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+        }
+        .image-preview-container .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #dc2626;
+            color: white;
+            border: none;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            transition: background 0.2s;
+        }
+        .image-preview-container .remove-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* Upload progress */
+        .upload-progress-container {
+            width: 100%;
+            background: #1e1e1e;
+            border-radius: 4px;
+            height: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .upload-progress-container .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #e5c158);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
         }
     </style>
 </head>
@@ -540,7 +584,7 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between text-xs font-semibold">
                                 <span class="text-gray-400">Progress ke Next Tier</span>
-                                <span id="point-progress-text" class="text-gold-400">850 / 1000 Points</span>
+                                <span id="point-progress-text" class="text-gold-400">850 / 100 Points</span>
                             </div>
                             <div class="w-full bg-charcoal-900 rounded-full h-3 overflow-hidden border border-gray-800">
                                 <div id="point-progress-bar" class="gold-btn h-full rounded-full transition-all duration-500" style="width: 85%;"></div>
@@ -847,7 +891,9 @@
         </div>
     </div>
 
-    <!-- Add/Edit Review Modal (with image upload) -->
+    <!-- ========================================================== -->
+    <!-- REVIEW MODAL – with image upload (JPEG/PNG only)          -->
+    <!-- ========================================================== -->
     <div id="review-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="review-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -870,33 +916,32 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Ulasan Anda</label>
                     <textarea id="review-comment" required rows="3" placeholder="Kongsikan pengalaman kopi anda di Selagi Coffee..." class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400"></textarea>
                 </div>
-                <!-- Image upload section -->
+                <!-- ===== REVIEW IMAGE UPLOAD (JPEG/PNG ONLY) ===== -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar (Pilih dari galeri)</label>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar (JPEG / PNG sahaja)</label>
                     <div class="flex flex-wrap items-center gap-3">
                         <button type="button" onclick="document.getElementById('review-image-file').click()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">
                             <i class="fa-solid fa-image"></i> Pilih Gambar
                         </button>
-                        <input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="handleReviewImageSelect(event)">
+                        <input type="file" id="review-image-file" accept="image/jpeg,image/png" class="hidden" onchange="handleReviewImageSelect(event)">
                         <span id="review-image-filename" class="text-xs text-gray-400">Tiada gambar dipilih</span>
                     </div>
                     <div id="review-image-preview" class="mt-2 hidden">
-                        <div class="relative inline-block">
+                        <div class="image-preview-container">
                             <img id="review-image-preview-img" src="" alt="Preview" class="w-20 h-20 rounded-lg object-cover border border-gray-700">
-                            <button type="button" onclick="removeReviewImage()" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-rose-600 text-white text-xs flex items-center justify-center shadow-lg hover:bg-rose-700 transition">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
+                            <button type="button" onclick="removeReviewImage()" class="remove-btn"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                     </div>
-                    <!-- Hidden field to store image URL (from upload) -->
                     <input type="hidden" id="review-image-url" value="">
+                    <!-- Upload progress -->
+                    <div id="review-upload-progress" class="upload-progress-container hidden">
+                        <div id="review-upload-progress-bar" class="upload-progress-bar"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 5MB. Format: JPEG / PNG</p>
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeModal('review-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
                     <button type="submit" id="review-submit-btn" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Hantar Ulasan</button>
-                </div>
-                <div id="review-upload-progress" class="hidden w-full bg-charcoal-900 rounded-full h-1.5 mt-2">
-                    <div id="review-upload-progress-bar" class="bg-gold-400 h-1.5 rounded-full transition-all duration-300" style="width:0%"></div>
                 </div>
             </form>
         </div>
@@ -1024,11 +1069,13 @@
         </div>
     </div>
 
-    <!-- Admin Add/Edit Promotion Modal -->
+    <!-- ========================================================== -->
+    <!-- PROMOTION MODAL – with image upload (JPEG/PNG only)       -->
+    <!-- ========================================================== -->
     <div id="promo-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="promo-modal-card">
             <div class="flex items-center justify-between mb-4">
-                <h3 id="promo-modal-title" class="text-base font-bold text-white">Add Promotion</h3>
+                <h3 id="promo-modal-title" class="text-base font-bold text-white">Tambah Promosi</h3>
                 <button onclick="closeModal('promo-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="handleSavePromo(event)" class="space-y-3">
@@ -1041,9 +1088,28 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Keterangan</label>
                     <input type="text" id="p-desc" required placeholder="Try our newest artisan creation" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
                 </div>
+                <!-- ===== PROMO IMAGE UPLOAD (JPEG/PNG ONLY) ===== -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Image URL</label>
-                    <input type="url" id="p-image" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar Promosi (JPEG / PNG sahaja)</label>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" onclick="document.getElementById('promo-image-file').click()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">
+                            <i class="fa-solid fa-image"></i> Pilih Gambar
+                        </button>
+                        <input type="file" id="promo-image-file" accept="image/jpeg,image/png" class="hidden" onchange="handlePromoImageSelect(event)">
+                        <span id="promo-image-filename" class="text-xs text-gray-400">Tiada gambar dipilih</span>
+                    </div>
+                    <div id="promo-image-preview" class="mt-2 hidden">
+                        <div class="image-preview-container">
+                            <img id="promo-image-preview-img" src="" alt="Preview" class="w-20 h-20 rounded-lg object-cover border border-gray-700">
+                            <button type="button" onclick="removePromoImage()" class="remove-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="promo-image-url" value="">
+                    <!-- Upload progress -->
+                    <div id="promo-upload-progress" class="upload-progress-container hidden">
+                        <div id="promo-upload-progress-bar" class="upload-progress-bar"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 5MB. Format: JPEG / PNG</p>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -1061,7 +1127,7 @@
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeModal('promo-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
-                    <button type="submit" class="w-1/2 py-2.5 rounded-xl coffee-btn text-xs font-bold">Simpan</button>
+                    <button type="submit" id="promo-submit-btn" class="w-1/2 py-2.5 rounded-xl coffee-btn text-xs font-bold">Simpan</button>
                 </div>
             </form>
         </div>
@@ -1147,7 +1213,8 @@
         let promotionsCache = {};
         let reviewsCache = {};
         let redemptionsCache = {};
-        let pendingReviewImageFile = null; // for upload
+        let pendingReviewImageFile = null; // for review upload
+        let pendingPromoImageFile = null; // for promo upload
 
         // Listen to Firebase Auth state changes
         firebase.auth().onAuthStateChanged(async (user) => {
@@ -2006,7 +2073,8 @@
             });
         }
 
-        // Review handlers (with image upload)
+        // ===== REVIEW HANDLERS DENGAN UPLOAD (JPEG/PNG) =====
+
         function openAddReviewModal() {
             document.getElementById('review-edit-id').value = '';
             document.getElementById('review-modal-title').textContent = 'Tulis Ulasan';
@@ -2016,6 +2084,8 @@
             document.getElementById('review-image-file').value = '';
             document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
             document.getElementById('review-image-preview').classList.add('hidden');
+            document.getElementById('review-upload-progress').classList.add('hidden');
+            document.getElementById('review-upload-progress-bar').style.width = '0%';
             pendingReviewImageFile = null;
             openModal('review-modal');
         }
@@ -2031,6 +2101,8 @@
             document.getElementById('review-image-url').value = rev.image || '';
             document.getElementById('review-image-file').value = '';
             document.getElementById('review-image-filename').textContent = rev.image ? 'Gambar sedia ada' : 'Tiada gambar';
+            document.getElementById('review-upload-progress').classList.add('hidden');
+            document.getElementById('review-upload-progress-bar').style.width = '0%';
             if (rev.image) {
                 document.getElementById('review-image-preview-img').src = rev.image;
                 document.getElementById('review-image-preview').classList.remove('hidden');
@@ -2044,9 +2116,16 @@
         function handleReviewImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
+            // Validate file type (JPEG/PNG)
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                showToast('❌ Sila pilih gambar dalam format JPEG atau PNG sahaja.', 'error');
+                event.target.value = '';
+                return;
+            }
             // Check file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                showToast('Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
+                showToast('❌ Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
                 event.target.value = '';
                 return;
             }
@@ -2067,54 +2146,92 @@
             document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
             document.getElementById('review-image-preview').classList.add('hidden');
             document.getElementById('review-image-url').value = '';
+            document.getElementById('review-upload-progress').classList.add('hidden');
+            document.getElementById('review-upload-progress-bar').style.width = '0%';
         }
 
-        // Upload image to Firebase Storage and return download URL
-        function uploadReviewImage(file, userId) {
+        // ===== UPLOAD IMAGE DENGAN TIMEOUT & BETTER ERROR HANDLING =====
+        function uploadImage(file, folder, userId) {
             return new Promise((resolve, reject) => {
                 const storageRef = storage.ref();
                 const timestamp = Date.now();
-                const filename = `${userId}_${timestamp}_${file.name}`;
-                const imageRef = storageRef.child(`reviews/${filename}`);
+                const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                const filename = `${userId}_${timestamp}_${safeName}`;
+                const imageRef = storageRef.child(`${folder}/${filename}`);
                 const uploadTask = imageRef.put(file);
 
-                // Show progress bar
-                const progressContainer = document.getElementById('review-upload-progress');
-                const progressBar = document.getElementById('review-upload-progress-bar');
+                // Determine which progress bar to use
+                const isReview = folder === 'reviews';
+                const progressContainer = document.getElementById(isReview ? 'review-upload-progress' :
+                    'promo-upload-progress');
+                const progressBar = document.getElementById(isReview ? 'review-upload-progress-bar' :
+                    'promo-upload-progress-bar');
                 progressContainer.classList.remove('hidden');
                 progressBar.style.width = '0%';
+
+                // Timeout: batal selepas 30 saat
+                let timeoutId = setTimeout(() => {
+                    uploadTask.cancel();
+                    progressContainer.classList.add('hidden');
+                    reject(new Error('⏱️ Muat naik mengambil masa terlalu lama (30 saat). Sila cuba dengan gambar yang lebih kecil.'));
+                }, 30000);
 
                 uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         progressBar.style.width = progress + '%';
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            uploadTask.cancel();
+                            progressContainer.classList.add('hidden');
+                            reject(new Error('⏱️ Muat naik tergantung. Sila cuba dengan gambar yang lebih kecil.'));
+                        }, 30000);
                     },
                     (error) => {
+                        clearTimeout(timeoutId);
                         progressContainer.classList.add('hidden');
-                        reject(error);
+                        console.error('🔥 Upload error:', error);
+                        let msg = 'Gagal muat naik gambar: ';
+                        if (error.code === 'storage/canceled') {
+                            msg += 'Muat naik dibatalkan (mungkin terlalu lama).';
+                        } else if (error.code === 'storage/unauthorized') {
+                            msg += 'Anda tidak dibenarkan. Sila log masuk semula.';
+                        } else if (error.code === 'storage/quota-exceeded') {
+                            msg += 'Storan penuh. Hubungi admin.';
+                        } else if (error.message) {
+                            msg += error.message;
+                        } else {
+                            msg += 'Sila cuba lagi.';
+                        }
+                        reject(new Error(msg));
                     },
                     () => {
-                        // Upload completed successfully, get download URL
+                        clearTimeout(timeoutId);
                         imageRef.getDownloadURL().then((url) => {
                             progressContainer.classList.add('hidden');
                             resolve(url);
-                        }).catch(reject);
+                        }).catch((err) => {
+                            progressContainer.classList.add('hidden');
+                            console.error('🔥 Get download URL error:', err);
+                            reject(new Error('Gagal mendapatkan URL gambar: ' + err.message));
+                        });
                     }
                 );
             });
         }
 
+        // ===== SAVE REVIEW DENGAN BETTER ERROR HANDLING =====
         function handleSaveReview(e) {
             e.preventDefault();
+
             const revId = document.getElementById('review-edit-id').value;
             const comment = document.getElementById('review-comment').value.trim();
             const rating = parseInt(document.getElementById('review-rating').value);
             const existingImageUrl = document.getElementById('review-image-url').value;
 
-            // If there is a pending image file, upload first, then save review
             const submitBtn = document.getElementById('review-submit-btn');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Memuat naik...';
+            submitBtn.textContent = '⏳ Memuat naik...';
 
             const saveReviewData = (imageUrl) => {
                 let reviews = getCachedData(reviewsCache);
@@ -2124,9 +2241,13 @@
                         const updateObj = {};
                         updateObj[revId] = { ...rev, comment, rating, image: imageUrl };
                         updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                            showToast('Ulasan dikemaskini!', 'success');
+                            showToast('✅ Ulasan dikemaskini!', 'success');
                             closeModal('review-modal');
                             renderHomeReviews();
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Hantar Ulasan';
+                        }).catch(err => {
+                            showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
                             submitBtn.disabled = false;
                             submitBtn.textContent = 'Hantar Ulasan';
                         });
@@ -2144,9 +2265,13 @@
                     const updateObj = {};
                     updateObj[newRevId] = newRev;
                     updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                        showToast('Terima kasih atas ulasan anda!', 'success');
+                        showToast('✅ Terima kasih atas ulasan anda!', 'success');
                         closeModal('review-modal');
                         renderHomeReviews();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Hantar Ulasan';
+                    }).catch(err => {
+                        showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Hantar Ulasan';
                     });
@@ -2154,31 +2279,213 @@
             };
 
             if (pendingReviewImageFile) {
-                // Upload image
-                uploadReviewImage(pendingReviewImageFile, currentCustomerData.id)
+                uploadImage(pendingReviewImageFile, 'reviews', currentCustomerData.id)
                     .then((url) => {
-                        // Save review with image URL
                         saveReviewData(url);
-                        // Clear pending
                         pendingReviewImageFile = null;
                         document.getElementById('review-image-file').value = '';
                         document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
                         document.getElementById('review-image-preview').classList.add('hidden');
+                        document.getElementById('review-upload-progress').classList.add('hidden');
+                        document.getElementById('review-upload-progress-bar').style.width = '0%';
                     })
                     .catch((error) => {
-                        showToast('Gagal memuat naik gambar: ' + error.message, 'error');
+                        console.error('Upload error:', error);
+                        showConfirmModal(
+                            '⚠️ Muat Naik Gambar Gagal',
+                            error.message + '\n\nAnda masih boleh menyimpan ulasan tanpa gambar. Teruskan?',
+                            'fa-solid fa-triangle-exclamation text-amber-400',
+                            function() {
+                                saveReviewData(existingImageUrl || '');
+                                pendingReviewImageFile = null;
+                                document.getElementById('review-image-file').value = '';
+                                document.getElementById('review-image-filename').textContent =
+                                'Tiada gambar dipilih';
+                                document.getElementById('review-image-preview').classList.add('hidden');
+                                document.getElementById('review-upload-progress').classList.add('hidden');
+                                document.getElementById('review-upload-progress-bar').style.width = '0%';
+                            }
+                        );
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Hantar Ulasan';
-                        console.error(error);
                     });
             } else {
-                // No new image, use existing (maybe removed)
-                const imageUrl = document.getElementById('review-image-url').value || '';
-                saveReviewData(imageUrl);
+                saveReviewData(existingImageUrl || '');
             }
         }
 
-        // Profile edit
+        // ===== PROMOTION IMAGE HANDLERS (JPEG/PNG) =====
+
+        function openAddPromoModal() {
+            document.getElementById('promo-edit-id').value = '';
+            document.getElementById('promo-modal-title').textContent = 'Tambah Promosi';
+            document.getElementById('p-title').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('promo-image-url').value = '';
+            document.getElementById('promo-image-file').value = '';
+            document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
+            document.getElementById('promo-image-preview').classList.add('hidden');
+            document.getElementById('promo-upload-progress').classList.add('hidden');
+            document.getElementById('promo-upload-progress-bar').style.width = '0%';
+            document.getElementById('p-start').value = new Date().toISOString().split('T')[0];
+            document.getElementById('p-end').value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
+                .split('T')[0];
+            document.getElementById('p-active').checked = true;
+            pendingPromoImageFile = null;
+            openModal('promo-modal');
+        }
+
+        function openEditPromoModal(promoId) {
+            const promos = getCachedData(promotionsCache);
+            const p = promos.find(item => item.id === promoId);
+            if (!p) return;
+            document.getElementById('promo-edit-id').value = p.id;
+            document.getElementById('promo-modal-title').textContent = 'Sunting Promosi';
+            document.getElementById('p-title').value = p.title;
+            document.getElementById('p-desc').value = p.description;
+            document.getElementById('promo-image-url').value = p.image || '';
+            document.getElementById('promo-image-file').value = '';
+            document.getElementById('promo-image-filename').textContent = p.image ? 'Gambar sedia ada' : 'Tiada gambar';
+            document.getElementById('promo-upload-progress').classList.add('hidden');
+            document.getElementById('promo-upload-progress-bar').style.width = '0%';
+            if (p.image) {
+                document.getElementById('promo-image-preview-img').src = p.image;
+                document.getElementById('promo-image-preview').classList.remove('hidden');
+            } else {
+                document.getElementById('promo-image-preview').classList.add('hidden');
+            }
+            document.getElementById('p-start').value = p.startDate;
+            document.getElementById('p-end').value = p.endDate;
+            document.getElementById('p-active').checked = p.active;
+            pendingPromoImageFile = null;
+            openModal('promo-modal');
+        }
+
+        function handlePromoImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            // Validate file type (JPEG/PNG)
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                showToast('❌ Sila pilih gambar dalam format JPEG atau PNG sahaja.', 'error');
+                event.target.value = '';
+                return;
+            }
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
+                event.target.value = '';
+                return;
+            }
+            pendingPromoImageFile = file;
+            document.getElementById('promo-image-filename').textContent = file.name;
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('promo-image-preview-img').src = e.target.result;
+                document.getElementById('promo-image-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePromoImage() {
+            pendingPromoImageFile = null;
+            document.getElementById('promo-image-file').value = '';
+            document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
+            document.getElementById('promo-image-preview').classList.add('hidden');
+            document.getElementById('promo-image-url').value = '';
+            document.getElementById('promo-upload-progress').classList.add('hidden');
+            document.getElementById('promo-upload-progress-bar').style.width = '0%';
+        }
+
+        // ===== SAVE PROMOTION DENGAN UPLOAD GAMBAR =====
+
+        function handleSavePromo(e) {
+            e.preventDefault();
+            const id = document.getElementById('promo-edit-id').value;
+            const title = document.getElementById('p-title').value.trim();
+            const desc = document.getElementById('p-desc').value.trim();
+            const startDate = document.getElementById('p-start').value;
+            const endDate = document.getElementById('p-end').value;
+            const active = document.getElementById('p-active').checked;
+            const existingImageUrl = document.getElementById('promo-image-url').value;
+
+            const submitBtn = document.getElementById('promo-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Memuat naik...';
+
+            const savePromoData = (imageUrl) => {
+                const finalImage = imageUrl || 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600';
+                if (id) {
+                    const updateObj = {};
+                    updateObj[id] = { title, description: desc, image: finalImage, startDate, endDate, active };
+                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
+                        showToast('✅ Promosi disimpan!', 'success');
+                        closeModal('promo-modal');
+                        renderAdminPromotions();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Simpan';
+                    }).catch(err => {
+                        showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Simpan';
+                    });
+                } else {
+                    const newId = 'promo-' + generateId();
+                    const updateObj = {};
+                    updateObj[newId] = { title, description: desc, image: finalImage, startDate, endDate, active };
+                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
+                        showToast('✅ Promosi disimpan!', 'success');
+                        closeModal('promo-modal');
+                        renderAdminPromotions();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Simpan';
+                    }).catch(err => {
+                        showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Simpan';
+                    });
+                }
+            };
+
+            if (pendingPromoImageFile) {
+                uploadImage(pendingPromoImageFile, 'promotions', 'admin')
+                    .then((url) => {
+                        savePromoData(url);
+                        pendingPromoImageFile = null;
+                        document.getElementById('promo-image-file').value = '';
+                        document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
+                        document.getElementById('promo-image-preview').classList.add('hidden');
+                        document.getElementById('promo-upload-progress').classList.add('hidden');
+                        document.getElementById('promo-upload-progress-bar').style.width = '0%';
+                    })
+                    .catch((error) => {
+                        console.error('Promo upload error:', error);
+                        showConfirmModal(
+                            '⚠️ Muat Naik Gambar Promosi Gagal',
+                            error.message + '\n\nAnda masih boleh menyimpan promosi tanpa gambar. Teruskan?',
+                            'fa-solid fa-triangle-exclamation text-amber-400',
+                            function() {
+                                savePromoData(existingImageUrl || '');
+                                pendingPromoImageFile = null;
+                                document.getElementById('promo-image-file').value = '';
+                                document.getElementById('promo-image-filename').textContent =
+                                'Tiada gambar dipilih';
+                                document.getElementById('promo-image-preview').classList.add('hidden');
+                                document.getElementById('promo-upload-progress').classList.add('hidden');
+                                document.getElementById('promo-upload-progress-bar').style.width = '0%';
+                            }
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Simpan';
+                    });
+            } else {
+                savePromoData(existingImageUrl || '');
+            }
+        }
+
+        // ===== PROFILE EDIT =====
+
         function openEditProfileModal() {
             document.getElementById('edit-prof-name').value = currentCustomerData.name;
             document.getElementById('edit-prof-phone').value = currentCustomerData.phone;
@@ -2290,19 +2597,14 @@
                 showToast('Sila masukkan nilai cap positif.', 'error');
                 return;
             }
-            // Cap cannot exceed 10? We can allow but handle automatically
             const customers = getCachedData(customersCache);
             const cust = customers.find(c => c.id === currentCustomerData.id);
             if (cust) {
                 let newCaps = (cust.caps || 0) + capsToAdd;
-                // If newCaps >= 10, we can trigger achievement or just reset
                 if (newCaps >= 10) {
-                    // Trigger achievement and reset to remainder
                     const remainder = newCaps % 10;
                     cust.caps = remainder;
-                    // Show achievement toast
                     showToast('🎉 Tahniah! Cap penuh! Ganjaran telah diberikan.', 'success');
-                    // Maybe give extra points? For now just reset
                 } else {
                     cust.caps = newCaps;
                 }
@@ -2332,7 +2634,7 @@
             e.preventDefault();
             const id = document.getElementById('staff-id').value.trim();
             const pass = document.getElementById('staff-password').value;
-            if (id === 'admin' && pass === 'Admin24') {
+            if (id === 'admin' && pass === 'Admin2024') {
                 closeModal('staff-login-modal');
                 showToast('Akses Admin Dibenarkan.', 'success');
                 showStaffDashboard();
@@ -2631,65 +2933,6 @@
                         `;
                 container.appendChild(card);
             });
-        }
-
-        function openAddPromoModal() {
-            document.getElementById('promo-edit-id').value = '';
-            document.getElementById('promo-modal-title').textContent = 'Add Promotion';
-            document.getElementById('p-title').value = '';
-            document.getElementById('p-desc').value = '';
-            document.getElementById('p-image').value = '';
-            document.getElementById('p-start').value = new Date().toISOString().split('T')[0];
-            document.getElementById('p-end').value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-                .split('T')[0];
-            document.getElementById('p-active').checked = true;
-            openModal('promo-modal');
-        }
-
-        function openEditPromoModal(promoId) {
-            const promos = getCachedData(promotionsCache);
-            const p = promos.find(item => item.id === promoId);
-            if (!p) return;
-            document.getElementById('promo-edit-id').value = p.id;
-            document.getElementById('promo-modal-title').textContent = 'Edit Promotion';
-            document.getElementById('p-title').value = p.title;
-            document.getElementById('p-desc').value = p.description;
-            document.getElementById('p-image').value = p.image;
-            document.getElementById('p-start').value = p.startDate;
-            document.getElementById('p-end').value = p.endDate;
-            document.getElementById('p-active').checked = p.active;
-            openModal('promo-modal');
-        }
-
-        function handleSavePromo(e) {
-            e.preventDefault();
-            const id = document.getElementById('promo-edit-id').value;
-            const title = document.getElementById('p-title').value.trim();
-            const desc = document.getElementById('p-desc').value.trim();
-            const image = document.getElementById('p-image').value.trim() ||
-                'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600';
-            const startDate = document.getElementById('p-start').value;
-            const endDate = document.getElementById('p-end').value;
-            const active = document.getElementById('p-active').checked;
-
-            if (id) {
-                const updateObj = {};
-                updateObj[id] = { title, description: desc, image, startDate, endDate, active };
-                updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
-                    showToast('Promosi disimpan!', 'success');
-                    closeModal('promo-modal');
-                    renderAdminPromotions();
-                });
-            } else {
-                const newId = 'promo-' + generateId();
-                const updateObj = {};
-                updateObj[newId] = { title, description: desc, image, startDate, endDate, active };
-                updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
-                    showToast('Promosi disimpan!', 'success');
-                    closeModal('promo-modal');
-                    renderAdminPromotions();
-                });
-            }
         }
 
         function deletePromo(promoId) {
