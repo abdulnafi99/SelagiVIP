@@ -9,6 +9,11 @@
     <!-- ===== FIREBASE SDK (CDN Compat) ===== -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
+    </script>
+    <!-- ✅ TAMBAH SDK AUTH -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js">
     </script>
 
@@ -22,14 +27,16 @@
             storageBucket: "selagi-coffee-vip.firebasestorage.app",
             messagingSenderId: "353230382052",
             appId: "1:353230382052:web:45c82f64cedde9bcde1df1",
-            measurementId: "G-77ZN37FNT1"
+            measurementId: "G-77ZN37FNT1",
+            databaseURL: "https://selagi-coffee-vip-default-rtdb.firebaseio.com/"
         };
 
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const analytics = firebase.analytics(app);
+        const database = firebase.database();
 
-        console.log('🔥 Firebase initialized successfully.');
+        console.log('🔥 Firebase initialized successfully with Realtime Database.');
     </script>
 
     <!-- Google Fonts -->
@@ -231,7 +238,7 @@
                 <p class="text-[10px] tracking-widest text-gold-400 font-semibold uppercase mt-1">Artisan Members Club</p>
             </div>
 
-            <!-- LOGIN FORM – Phone Only -->
+            <!-- LOGIN FORM – Phone Only (with password prompt) -->
             <div id="login-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-white">Welcome Back 👋</h2>
@@ -245,7 +252,7 @@
                             <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
                             <input type="tel" id="login-phone" required placeholder="01173108046" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition">
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-1.5"><i class="fa-regular fa-circle-check text-emerald-500"></i> Log masuk dengan nombor telefon sahaja — tiada kata laluan diperlukan.</p>
+                        <p class="text-[10px] text-gray-500 mt-1.5"><i class="fa-regular fa-circle-check text-emerald-500"></i> Log masuk dengan nombor telefon — anda akan diminta kata laluan.</p>
                     </div>
 
                     <div class="flex justify-end">
@@ -889,193 +896,304 @@
     </div>
 
 
-    <!-- ===== JS APPLICATION LOGIC ===== -->
+    <!-- ============================================================== -->
+    <!-- ===== JS APPLICATION LOGIC (DENGAN FIREBASE AUTH) ===== -->
+    <!-- ============================================================== -->
     <script>
         /* ==========================================================================
-           1. LOCAL STORAGE PERSISTENCE & INITIAL DEMO DATA
+           1. FIREBASE AUTH + DATABASE HELPERS
            ========================================================================== */
 
-        const STORAGE_KEYS = {
-            CUSTOMERS: 'selagi_customers_db_v1',
-            REWARDS: 'selagi_rewards_db_v1',
-            PROMOTIONS: 'selagi_promotions_db_v1',
-            REVIEWS: 'selagi_reviews_db_v1',
-            REDEMPTIONS: 'selagi_redemptions_db_v1',
-            CURRENT_USER: 'selagi_active_user_v1'
+        // Firebase Realtime Database references
+        const DB_REFS = {
+            customers: database.ref('customers'),
+            rewards: database.ref('rewards'),
+            promotions: database.ref('promotions'),
+            reviews: database.ref('reviews'),
+            redemptions: database.ref('redemptions'),
         };
 
-        function initSeedData() {
-            if (!localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) {
-                const initialCustomers = [{
-                    id: 'cust-1',
-                    name: 'Nafi',
-                    email: 'nafi@selagi.coffee',
-                    phone: '01173108046',
-                    birthday: '1999-01-03',
-                    password: 'password123',
-                    points: 850,
-                    caps: 7,
-                    membership: 'Selagi Coffee Artisan Members',
-                    createdAt: new Date().toISOString(),
-                    pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
-                }, {
-                    id: 'cust-2',
-                    name: 'Aina Safiah',
-                    email: 'aina@selagi.coffee',
-                    phone: '0123456789',
-                    birthday: '1998-05-15',
-                    password: 'password123',
-                    points: 320,
-                    caps: 4,
-                    membership: 'Selagi Coffee Artisan Members',
-                    createdAt: new Date().toISOString(),
-                    pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
-                }];
-                localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(initialCustomers));
-            }
-
-            if (!localStorage.getItem(STORAGE_KEYS.REWARDS)) {
-                const initialRewards = [{
-                    id: 'rew-1',
-                    name: 'Free Coffee',
-                    description: 'Segelas espresso artisan atau americano kegemaran anda.',
-                    pointsRequired: 100,
-                    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=60',
-                    active: true
-                }, {
-                    id: 'rew-2',
-                    name: 'Free Donut',
-                    description: 'Donut lembut bersalut coklat premium atau artisanal glaze.',
-                    pointsRequired: 150,
-                    image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=60',
-                    active: true
-                }, {
-                    id: 'rew-3',
-                    name: 'RM5 Discount',
-                    description: 'Baucar RM5 untuk sebarang pesanan di kaunter.',
-                    pointsRequired: 250,
-                    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60',
-                    active: true
-                }, {
-                    id: 'rew-4',
-                    name: 'Premium Coffee',
-                    description: 'Minuman khas Pistachio Latte atau Reserve Pour-Over.',
-                    pointsRequired: 300,
-                    image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=60',
-                    active: true
-                }];
-                localStorage.setItem(STORAGE_KEYS.REWARDS, JSON.stringify(initialRewards));
-            }
-
-            if (!localStorage.getItem(STORAGE_KEYS.PROMOTIONS)) {
-                const initialPromos = [{
-                    id: 'promo-1',
-                    title: 'Pistachio Latte is Here',
-                    description: 'Try our newest artisan coffee creation infused with real Mediterranean pistachio.',
-                    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&auto=format&fit=crop&q=60',
-                    startDate: '2026-09-01',
-                    endDate: '2026-10-30',
-                    active: true
-                }, {
-                    id: 'promo-2',
-                    title: 'Double Stamp Tuesday',
-                    description: 'Kumpul 2 cap minuman untuk setiap pembelian minuman saiz Grande setiap hari Selasa!',
-                    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=60',
-                    startDate: '2026-09-01',
-                    endDate: '2026-12-31',
-                    active: true
-                }];
-                localStorage.setItem(STORAGE_KEYS.PROMOTIONS, JSON.stringify(initialPromos));
-            }
-
-            if (!localStorage.getItem(STORAGE_KEYS.REVIEWS)) {
-                const initialReviews = [{
-                    id: 'rev-1',
-                    customerId: 'cust-1',
-                    customerName: 'Nafi',
-                    rating: 5,
-                    comment: 'Pistachio Latte memang padu! Tempat cozy & servis pantas. Cap reward pun mudah dikumpul!',
-                    createdAt: '2026-09-02'
-                }, {
-                    id: 'rev-2',
-                    customerId: 'cust-2',
-                    customerName: 'Aina Safiah',
-                    rating: 5,
-                    comment: 'Suka sangat dengan suasana Selagi Coffee. Kopi sentiasa segar & wangi.',
-                    createdAt: '2026-09-05'
-                }];
-                localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(initialReviews));
-            }
-
-            if (!localStorage.getItem(STORAGE_KEYS.REDEMPTIONS)) {
-                const initialRedemptions = [{
-                    id: 'red-1',
-                    customerId: 'cust-1',
-                    rewardId: 'rew-1',
-                    rewardName: 'Free Coffee',
-                    pointsUsed: 100,
-                    redeemedAt: '2026-08-28 14:30'
-                }];
-                localStorage.setItem(STORAGE_KEYS.REDEMPTIONS, JSON.stringify(initialRedemptions));
-            }
+        // Helper to get data once from Firebase Realtime Database
+        function getFirebaseData(ref) {
+            return ref.once('value').then(snapshot => snapshot.val() || {});
         }
 
-        function getDB(key) { return JSON.parse(localStorage.getItem(key) || '[]'); }
+        // Helper to set data to Firebase Realtime Database
+        function setFirebaseData(ref, data) {
+            return ref.set(data);
+        }
 
-        function setDB(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+        // Helper to push data to Firebase Realtime Database (generates unique key)
+        function pushFirebaseData(ref, data) {
+            return ref.push(data);
+        }
+
+        // Helper to update specific child in Firebase Realtime Database
+        function updateFirebaseData(ref, data) {
+            return ref.update(data);
+        }
+
+        // Helper to remove data from Firebase Realtime Database
+        function removeFirebaseData(ref) {
+            return ref.remove();
+        }
+
+        // Convert Firebase object to array with IDs
+        function firebaseObjToArray(obj) {
+            if (!obj) return [];
+            return Object.keys(obj).map(key => ({
+                id: key,
+                ...obj[key]
+            }));
+        }
+
+        // Convert array to Firebase object (keyed by id)
+        function arrayToFirebaseObj(arr) {
+            const obj = {};
+            arr.forEach(item => {
+                const id = item.id;
+                const { id: _, ...data } = item;
+                obj[id] = data;
+            });
+            return obj;
+        }
+
+        // Generate short ID for local use (Firebase uses push keys)
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
 
         /* ==========================================================================
            2. GLOBAL STATE
            ========================================================================== */
 
-        let currentUser = null;
+        let currentUser = null; // Firebase user object
+        let currentCustomerData = null; // Customer data from database
         let confirmActionCallback = null;
+        let customersCache = {};
+        let rewardsCache = {};
+        let promotionsCache = {};
+        let reviewsCache = {};
+        let redemptionsCache = {};
+
+        // Listen to Firebase Auth state changes
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                console.log('✅ User logged in:', user.email);
+
+                // Load customer data from database
+                const customers = await getFirebaseData(DB_REFS.customers);
+                customersCache = customers;
+
+                // Find customer by email
+                const customerArray = firebaseObjToArray(customers);
+                const customer = customerArray.find(c => c.email === user.email);
+
+                if (customer) {
+                    currentCustomerData = { id: customer.id, ...customer };
+                    localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
+                    showCustomerDashboard();
+                } else {
+                    // User exists in Auth but not in database - create record
+                    const newId = 'cust-' + generateId();
+                    const newCustomer = {
+                        name: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        phone: user.phoneNumber || '',
+                        birthday: '',
+                        points: 0,
+                        caps: 0,
+                        membership: 'Selagi Coffee Artisan Members',
+                        createdAt: new Date().toISOString(),
+                        pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                    };
+                    const updateObj = {};
+                    updateObj[newId] = newCustomer;
+                    await updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
+                    currentCustomerData = { id: newId, ...newCustomer };
+                    localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
+                    showCustomerDashboard();
+                }
+            } else {
+                // User is signed out
+                currentUser = null;
+                currentCustomerData = null;
+                localStorage.removeItem('selagi_active_user_v1');
+                showAuthView();
+            }
+        });
 
         window.onload = function() {
-            initSeedData();
-            checkAutoLogin();
-            if (typeof firebase !== 'undefined' && firebase.analytics) {
-                try {
-                    firebase.analytics().logEvent('page_view', { page_title: 'Selagi Coffee App Loaded' });
-                    console.log('📊 Firebase Analytics event logged.');
-                } catch (e) { console.warn('Analytics event skipped.'); }
-            }
+            // Load initial data from Firebase
+            loadAllData();
         };
 
-        function checkAutoLogin() {
-            const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-            if (savedUser) {
-                const userObj = JSON.parse(savedUser);
-                const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-                const updated = customers.find(c => c.id === userObj.id || c.phone === userObj.phone);
-                if (updated) {
-                    currentUser = updated;
-                    showCustomerDashboard();
-                    return;
+        function loadAllData() {
+            return Promise.all([
+                getFirebaseData(DB_REFS.customers).then(data => { customersCache = data || {}; }),
+                getFirebaseData(DB_REFS.rewards).then(data => { rewardsCache = data || {}; }),
+                getFirebaseData(DB_REFS.promotions).then(data => { promotionsCache = data || {}; }),
+                getFirebaseData(DB_REFS.reviews).then(data => { reviewsCache = data || {}; }),
+                getFirebaseData(DB_REFS.redemptions).then(data => { redemptionsCache = data || {}; }),
+            ]).catch(err => {
+                console.warn('Error loading data from Firebase:', err);
+                seedDefaultData();
+            });
+        }
+
+        function seedDefaultData() {
+            // Seed only if Firebase is empty
+            Promise.all([
+                getFirebaseData(DB_REFS.customers),
+                getFirebaseData(DB_REFS.rewards),
+                getFirebaseData(DB_REFS.promotions),
+                getFirebaseData(DB_REFS.reviews),
+                getFirebaseData(DB_REFS.redemptions),
+            ]).then(([customers, rewards, promotions, reviews, redemptions]) => {
+                if (Object.keys(customers).length === 0) {
+                    const defaultCustomers = {
+                        'cust-1': {
+                            name: 'Nafi Ahmad',
+                            email: 'nafi@selagi.coffee',
+                            phone: '01173108046',
+                            birthday: '1999-01-03',
+                            points: 850,
+                            caps: 7,
+                            membership: 'Selagi Coffee Artisan Members',
+                            createdAt: new Date().toISOString(),
+                            pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                        },
+                        'cust-2': {
+                            name: 'Aina Safiah',
+                            email: 'aina@selagi.coffee',
+                            phone: '0123456789',
+                            birthday: '1998-05-15',
+                            points: 320,
+                            caps: 4,
+                            membership: 'Selagi Coffee Artisan Members',
+                            createdAt: new Date().toISOString(),
+                            pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                        }
+                    };
+                    setFirebaseData(DB_REFS.customers, defaultCustomers);
+                    customersCache = defaultCustomers;
                 }
-            }
-            showAuthView();
+                if (Object.keys(rewards).length === 0) {
+                    const defaultRewards = {
+                        'rew-1': {
+                            name: 'Free Coffee',
+                            description: 'Segelas espresso artisan atau americano kegemaran anda.',
+                            pointsRequired: 100,
+                            image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=60',
+                            active: true
+                        },
+                        'rew-2': {
+                            name: 'Free Donut',
+                            description: 'Donut lembut bersalut coklat premium atau artisanal glaze.',
+                            pointsRequired: 150,
+                            image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&auto=format&fit=crop&q=60',
+                            active: true
+                        },
+                        'rew-3': {
+                            name: 'RM5 Discount',
+                            description: 'Baucar RM5 untuk sebarang pesanan di kaunter.',
+                            pointsRequired: 250,
+                            image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60',
+                            active: true
+                        },
+                        'rew-4': {
+                            name: 'Premium Coffee',
+                            description: 'Minuman khas Pistachio Latte atau Reserve Pour-Over.',
+                            pointsRequired: 300,
+                            image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=60',
+                            active: true
+                        }
+                    };
+                    setFirebaseData(DB_REFS.rewards, defaultRewards);
+                    rewardsCache = defaultRewards;
+                }
+                if (Object.keys(promotions).length === 0) {
+                    const defaultPromos = {
+                        'promo-1': {
+                            title: 'Pistachio Latte is Here',
+                            description: 'Try our newest artisan coffee creation infused with real Mediterranean pistachio.',
+                            image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&auto=format&fit=crop&q=60',
+                            startDate: '2026-09-01',
+                            endDate: '2026-10-30',
+                            active: true
+                        },
+                        'promo-2': {
+                            title: 'Double Stamp Tuesday',
+                            description: 'Kumpul 2 cap minuman untuk setiap pembelian minuman saiz Grande setiap hari Selasa!',
+                            image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=60',
+                            startDate: '2026-09-01',
+                            endDate: '2026-12-31',
+                            active: true
+                        }
+                    };
+                    setFirebaseData(DB_REFS.promotions, defaultPromos);
+                    promotionsCache = defaultPromos;
+                }
+                if (Object.keys(reviews).length === 0) {
+                    const defaultReviews = {
+                        'rev-1': {
+                            customerId: 'cust-1',
+                            customerName: 'Nafi',
+                            rating: 5,
+                            comment: 'Pistachio Latte memang padu! Tempat cozy & servis pantas. Cap reward pun mudah dikumpul!',
+                            createdAt: '2026-09-02'
+                        },
+                        'rev-2': {
+                            customerId: 'cust-2',
+                            customerName: 'Aina Safiah',
+                            rating: 5,
+                            comment: 'Suka sangat dengan suasana Selagi Coffee. Kopi sentiasa segar & wangi.',
+                            createdAt: '2026-09-05'
+                        }
+                    };
+                    setFirebaseData(DB_REFS.reviews, defaultReviews);
+                    reviewsCache = defaultReviews;
+                }
+                if (Object.keys(redemptions).length === 0) {
+                    const defaultRedemptions = {
+                        'red-1': {
+                            customerId: 'cust-1',
+                            rewardId: 'rew-1',
+                            rewardName: 'Free Coffee',
+                            pointsUsed: 100,
+                            redeemedAt: '2026-08-28 14:30'
+                        }
+                    };
+                    setFirebaseData(DB_REFS.redemptions, defaultRedemptions);
+                    redemptionsCache = defaultRedemptions;
+                }
+            }).catch(err => console.warn('Seed data error:', err));
         }
 
-        function showAuthView() {
-            document.getElementById('auth-view').classList.remove('hidden');
-            document.getElementById('customer-dashboard').classList.add('hidden');
-            document.getElementById('staff-dashboard').classList.add('hidden');
+        // Helper to get cached data as array
+        function getCachedData(cache) {
+            return firebaseObjToArray(cache);
         }
 
-        function showCustomerDashboard() {
-            document.getElementById('auth-view').classList.add('hidden');
-            document.getElementById('staff-dashboard').classList.add('hidden');
-            document.getElementById('customer-dashboard').classList.remove('hidden');
-            switchTab('home');
-            refreshCustomerUI();
+        // Helper to find item in cache by ID
+        function findInCache(cache, id) {
+            return cache[id] ? { id, ...cache[id] } : null;
         }
 
-        function showStaffDashboard() {
-            document.getElementById('auth-view').classList.add('hidden');
-            document.getElementById('customer-dashboard').classList.add('hidden');
-            document.getElementById('staff-dashboard').classList.remove('hidden');
-            renderAdminDashboard();
+        // Helper to update cache and Firebase
+        function updateCacheAndFirebase(cache, ref, newData) {
+            const updatedCache = { ...cache, ...newData };
+            Object.assign(cache, newData);
+            return setFirebaseData(ref, updatedCache);
+        }
+
+        // Helper to remove from cache and Firebase
+        function removeFromCacheAndFirebase(cache, ref, id) {
+            const { [id]: removed, ...rest } = cache;
+            Object.assign(cache, rest);
+            return setFirebaseData(ref, rest);
         }
 
         function showToast(message, type = 'success') {
@@ -1127,7 +1245,7 @@
         }
 
         /* ==========================================================================
-           3. AUTHENTICATION – Login (Phone Only) & Register (with Email + Password)
+           3. AUTHENTICATION – Using Firebase Auth
            ========================================================================== */
 
         function toggleAuthMode(mode) {
@@ -1142,24 +1260,37 @@
             }
         }
 
-        // LOGIN: phone number only – no password check
+        // LOGIN: phone + password using Firebase Auth
         function handleCustomerLogin(e) {
             e.preventDefault();
             const phone = document.getElementById('login-phone').value.trim();
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-            const user = customers.find(c => c.phone === phone);
 
-            if (user) {
-                currentUser = user;
-                localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-                showToast(`Selamat kembali, ${user.name}!`, 'success');
-                showCustomerDashboard();
-            } else {
+            // Find customer by phone
+            const customers = getCachedData(customersCache);
+            const customer = customers.find(c => c.phone === phone);
+
+            if (!customer) {
                 showToast('Nombor telefon tidak dijumpai. Sila daftar akaun terlebih dahulu.', 'error');
+                return;
             }
+
+            // Prompt for password
+            const password = prompt('Sila masukkan kata laluan untuk ' + customer.email + ':');
+            if (!password) return;
+
+            // Sign in with email and password
+            firebase.auth().signInWithEmailAndPassword(customer.email, password)
+                .then((userCredential) => {
+                    showToast(`Selamat kembali, ${customer.name}!`, 'success');
+                    // onAuthStateChanged will handle the rest
+                })
+                .catch((error) => {
+                    showToast('Kata laluan salah atau ralat: ' + error.message, 'error');
+                    console.error(error);
+                });
         }
 
-        // REGISTER: name, email, phone, birthday, password, confirm
+        // REGISTER: using Firebase Auth
         function handleCustomerRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
@@ -1174,7 +1305,7 @@
                 return;
             }
 
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const customers = getCachedData(customersCache);
             if (customers.some(c => c.phone === phone)) {
                 showToast('No. telefon telah mendaftar. Sila Log Masuk.', 'error');
                 return;
@@ -1184,31 +1315,46 @@
                 return;
             }
 
-            const expiryDate = new Date();
-            expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+            // Create user with Firebase Auth
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // User created in Auth
+                    const user = userCredential.user;
 
-            const newUser = {
-                id: 'cust-' + Date.now(),
-                name: name,
-                email: email,
-                phone: phone,
-                birthday: birthday,
-                password: password,
-                points: 0,
-                caps: 0,
-                membership: 'Selagi Coffee Artisan Members',
-                createdAt: new Date().toISOString(),
-                pointExpiry: expiryDate.toISOString()
-            };
+                    // Update profile with display name
+                    return user.updateProfile({
+                        displayName: name
+                    }).then(() => {
+                        // Now save to database
+                        const expiryDate = new Date();
+                        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
-            customers.push(newUser);
-            setDB(STORAGE_KEYS.CUSTOMERS, customers);
+                        const newUserId = 'cust-' + generateId();
+                        const newCustomer = {
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            birthday: birthday,
+                            points: 0,
+                            caps: 0,
+                            membership: 'Selagi Coffee Artisan Members',
+                            createdAt: new Date().toISOString(),
+                            pointExpiry: expiryDate.toISOString()
+                        };
 
-            currentUser = newUser;
-            localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
-
-            showToast('Selamat datang ke Selagi Coffee Artisan Members!', 'success');
-            showCustomerDashboard();
+                        const updateObj = {};
+                        updateObj[newUserId] = newCustomer;
+                        return updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
+                    });
+                })
+                .then(() => {
+                    showToast('Selamat datang ke Selagi Coffee Artisan Members!', 'success');
+                    // onAuthStateChanged will handle the rest
+                })
+                .catch((error) => {
+                    showToast('Ralat pendaftaran: ' + error.message, 'error');
+                    console.error(error);
+                });
         }
 
         function confirmCustomerLogout() {
@@ -1217,12 +1363,33 @@
                 'Adakah anda pasti mahu log keluar daripada akaun keahlian?',
                 'fa-solid fa-right-from-bracket text-rose-400',
                 function() {
-                    currentUser = null;
-                    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-                    showAuthView();
-                    showToast('Anda telah berjaya log keluar.', 'info');
+                    firebase.auth().signOut().then(() => {
+                        showToast('Anda telah berjaya log keluar.', 'info');
+                        // onAuthStateChanged will handle the rest
+                    });
                 }
             );
+        }
+
+        function showAuthView() {
+            document.getElementById('auth-view').classList.remove('hidden');
+            document.getElementById('customer-dashboard').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.add('hidden');
+        }
+
+        function showCustomerDashboard() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.add('hidden');
+            document.getElementById('customer-dashboard').classList.remove('hidden');
+            switchTab('home');
+            refreshCustomerUI();
+        }
+
+        function showStaffDashboard() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('customer-dashboard').classList.add('hidden');
+            document.getElementById('staff-dashboard').classList.remove('hidden');
+            renderAdminDashboard();
         }
 
         /* ==========================================================================
@@ -1248,19 +1415,28 @@
         }
 
         function refreshCustomerUI() {
-            if (!currentUser) return;
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-            const freshUser = customers.find(c => c.id === currentUser.id);
-            if (freshUser) {
-                currentUser = freshUser;
-                localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(freshUser));
+            if (!currentCustomerData) {
+                // Try to get from localStorage
+                const saved = localStorage.getItem('selagi_active_user_v1');
+                if (saved) {
+                    currentCustomerData = JSON.parse(saved);
+                } else {
+                    return;
+                }
             }
-            document.getElementById('dash-greeting-name').textContent = currentUser.name.split(' ')[0];
-            document.getElementById('dash-card-name').textContent = currentUser.name;
-            document.getElementById('dash-card-phone').textContent = currentUser.phone;
-            document.getElementById('dash-card-points').textContent = currentUser.points;
-            document.getElementById('dash-card-caps').textContent = currentUser.caps;
-            if (currentUser.caps >= 10) { handleCapAchievement(); }
+            // Refresh from cache
+            const customers = getCachedData(customersCache);
+            const freshUser = customers.find(c => c.id === currentCustomerData.id);
+            if (freshUser) {
+                currentCustomerData = freshUser;
+                localStorage.setItem('selagi_active_user_v1', JSON.stringify(freshUser));
+            }
+            document.getElementById('dash-greeting-name').textContent = currentCustomerData.name.split(' ')[0];
+            document.getElementById('dash-card-name').textContent = currentCustomerData.name;
+            document.getElementById('dash-card-phone').textContent = currentCustomerData.phone;
+            document.getElementById('dash-card-points').textContent = currentCustomerData.points;
+            document.getElementById('dash-card-caps').textContent = currentCustomerData.caps;
+            if (currentCustomerData.caps >= 10) { handleCapAchievement(); }
         }
 
         function handleCapAchievement() {
@@ -1269,13 +1445,16 @@
                 'Anda telah melengkapkan 10 Cap Minuman! Cap anda telah di-reset kepada 0 dan ganjaran khas telah dibuka.',
                 'fa-solid fa-gift text-gold-400',
                 function() {
-                    const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-                    const idx = customers.findIndex(c => c.id === currentUser.id);
-                    if (idx !== -1) {
-                        customers[idx].caps = 0;
-                        setDB(STORAGE_KEYS.CUSTOMERS, customers);
-                        currentUser = customers[idx];
-                        refreshCustomerUI();
+                    const customers = getCachedData(customersCache);
+                    const cust = customers.find(c => c.id === currentCustomerData.id);
+                    if (cust) {
+                        cust.caps = 0;
+                        const updateObj = {};
+                        updateObj[currentCustomerData.id] = { ...cust };
+                        updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                            currentCustomerData = { id: currentCustomerData.id, ...cust };
+                            refreshCustomerUI();
+                        });
                     }
                 }
             );
@@ -1283,7 +1462,7 @@
 
         function renderHomeTab() {
             refreshCustomerUI();
-            const promos = getDB(STORAGE_KEYS.PROMOTIONS).filter(p => p.active);
+            const promos = getCachedData(promotionsCache).filter(p => p.active);
             const promoContainer = document.getElementById('home-promotions-list');
             promoContainer.innerHTML = '';
             if (promos.length === 0) {
@@ -1295,16 +1474,16 @@
                     card.className =
                         'min-w-[260px] max-w-[280px] bg-charcoal-900 rounded-2xl overflow-hidden border border-gray-800 shadow-lg snap-start flex-shrink-0';
                     card.innerHTML = `
-                        <div class="h-32 w-full overflow-hidden relative">
-                            <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x200/2b160b/c89666?text=Selagi+Coffee'">
-                            <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/70 text-[9px] text-gold-400 font-bold tracking-wider uppercase backdrop-blur-sm">PROMO</span>
-                        </div>
-                        <div class="p-3.5 space-y-1">
-                            <h4 class="text-xs font-bold text-white line-clamp-1">${p.title}</h4>
-                            <p class="text-[11px] text-gray-400 line-clamp-2">${p.description}</p>
-                            <p class="text-[9px] text-coffee-400 font-medium pt-1"><i class="fa-regular fa-calendar"></i> ${p.startDate} - ${p.endDate}</p>
-                        </div>
-                    `;
+                                <div class="h-32 w-full overflow-hidden relative">
+                                    <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x200/2b160b/c89666?text=Selagi+Coffee'">
+                                    <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/70 text-[9px] text-gold-400 font-bold tracking-wider uppercase backdrop-blur-sm">PROMO</span>
+                                </div>
+                                <div class="p-3.5 space-y-1">
+                                    <h4 class="text-xs font-bold text-white line-clamp-1">${p.title}</h4>
+                                    <p class="text-[11px] text-gray-400 line-clamp-2">${p.description}</p>
+                                    <p class="text-[9px] text-coffee-400 font-medium pt-1"><i class="fa-regular fa-calendar"></i> ${p.startDate} - ${p.endDate}</p>
+                                </div>
+                            `;
                     promoContainer.appendChild(card);
                 });
             }
@@ -1312,7 +1491,7 @@
         }
 
         function renderHomeReviews() {
-            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const reviews = getCachedData(reviewsCache);
             const container = document.getElementById('home-reviews-list');
             container.innerHTML = '';
             if (reviews.length === 0) {
@@ -1321,35 +1500,35 @@
                 return;
             }
             reviews.forEach(r => {
-                const isOwn = r.customerId === currentUser.id;
+                const isOwn = r.customerId === currentCustomerData.id;
                 const stars = '⭐'.repeat(r.rating);
                 const div = document.createElement('div');
                 div.className = 'glass-panel p-3.5 rounded-2xl border border-white/5 space-y-1.5 relative';
                 div.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${r.customerName.charAt(0)}</div>
-                            <div>
-                                <span class="text-xs font-bold text-white">${r.customerName}</span>
-                                ${isOwn ? '<span class="text-[9px] bg-gold-500/20 text-gold-400 px-1.5 py-0.2 rounded ml-1 font-semibold">Anda</span>' : ''}
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${r.customerName.charAt(0)}</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-white">${r.customerName}</span>
+                                        ${isOwn ? '<span class="text-[9px] bg-gold-500/20 text-gold-400 px-1.5 py-0.2 rounded ml-1 font-semibold">Anda</span>' : ''}
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-gold-400">${stars}</span>
                             </div>
-                        </div>
-                        <span class="text-[10px] text-gold-400">${stars}</span>
-                    </div>
-                    <p class="text-xs text-gray-300 leading-relaxed pl-9">${r.comment}</p>
-                    <div class="flex justify-between items-center pl-9 pt-1 text-[9px] text-gray-500">
-                        <span>${r.createdAt}</span>
-                        ${isOwn ? `<button onclick="openEditReviewModal('${r.id}')" class="text-xs text-coffee-300 hover:text-gold-400 font-semibold"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` : ''}
-                    </div>
-                `;
+                            <p class="text-xs text-gray-300 leading-relaxed pl-9">${r.comment}</p>
+                            <div class="flex justify-between items-center pl-9 pt-1 text-[9px] text-gray-500">
+                                <span>${r.createdAt}</span>
+                                ${isOwn ? `<button onclick="openEditReviewModal('${r.id}')" class="text-xs text-coffee-300 hover:text-gold-400 font-semibold"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` : ''}
+                            </div>
+                        `;
                 container.appendChild(div);
             });
         }
 
         function renderRewardsTab() {
             refreshCustomerUI();
-            document.getElementById('reward-user-points').textContent = currentUser.points;
-            const rewards = getDB(STORAGE_KEYS.REWARDS).filter(r => r.active);
+            document.getElementById('reward-user-points').textContent = currentCustomerData.points;
+            const rewards = getCachedData(rewardsCache).filter(r => r.active);
             const grid = document.getElementById('rewards-grid');
             grid.innerHTML = '';
             if (rewards.length === 0) {
@@ -1358,32 +1537,32 @@
                 return;
             }
             rewards.forEach(r => {
-                const canRedeem = currentUser.points >= r.pointsRequired;
+                const canRedeem = currentCustomerData.points >= r.pointsRequired;
                 const card = document.createElement('div');
                 card.className =
                     'glass-panel p-4 rounded-2xl border border-coffee-400/20 flex gap-4 items-center justify-between shadow-lg';
                 card.innerHTML = `
-                    <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-charcoal-900 border border-gray-800">
-                        <img src="${r.image}" alt="${r.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Reward'">
-                    </div>
-                    <div class="flex-1 space-y-1">
-                        <h4 class="text-sm font-bold text-white">${r.name}</h4>
-                        <p class="text-[11px] text-gray-400 leading-snug">${r.description}</p>
-                        <span class="inline-block text-xs font-bold text-gold-400 pt-0.5"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</span>
-                    </div>
-                    <div>
-                        <button onclick="confirmRedeemReward('${r.id}')" ${!canRedeem ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl ${canRedeem ? 'gold-btn' : 'bg-charcoal-800 text-gray-600 cursor-not-allowed'} text-xs font-bold shadow">REDEEM</button>
-                    </div>
-                `;
+                            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-charcoal-900 border border-gray-800">
+                                <img src="${r.image}" alt="${r.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Reward'">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <h4 class="text-sm font-bold text-white">${r.name}</h4>
+                                <p class="text-[11px] text-gray-400 leading-snug">${r.description}</p>
+                                <span class="inline-block text-xs font-bold text-gold-400 pt-0.5"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</span>
+                            </div>
+                            <div>
+                                <button onclick="confirmRedeemReward('${r.id}')" ${!canRedeem ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl ${canRedeem ? 'gold-btn' : 'bg-charcoal-800 text-gray-600 cursor-not-allowed'} text-xs font-bold shadow">REDEEM</button>
+                            </div>
+                        `;
                 grid.appendChild(card);
             });
         }
 
         function confirmRedeemReward(rewardId) {
-            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const rewards = getCachedData(rewardsCache);
             const reward = rewards.find(r => r.id === rewardId);
             if (!reward) return;
-            if (currentUser.points < reward.pointsRequired) {
+            if (currentCustomerData.points < reward.pointsRequired) {
                 showToast('Insufficient points.', 'error');
                 return;
             }
@@ -1392,24 +1571,30 @@
                 `${reward.pointsRequired} points will be deducted from your account.`,
                 'fa-solid fa-gift text-gold-400',
                 function() {
-                    const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-                    const idx = customers.findIndex(c => c.id === currentUser.id);
-                    if (idx !== -1) {
-                        customers[idx].points -= reward.pointsRequired;
-                        setDB(STORAGE_KEYS.CUSTOMERS, customers);
-                        currentUser = customers[idx];
-                        const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS);
-                        redemptions.unshift({
-                            id: 'red-' + Date.now(),
-                            customerId: currentUser.id,
-                            rewardId: reward.id,
-                            rewardName: reward.name,
-                            pointsUsed: reward.pointsRequired,
-                            redeemedAt: new Date().toLocaleString('en-GB')
+                    const customers = getCachedData(customersCache);
+                    const cust = customers.find(c => c.id === currentCustomerData.id);
+                    if (cust) {
+                        cust.points -= reward.pointsRequired;
+                        const updateObj = {};
+                        updateObj[currentCustomerData.id] = { ...cust };
+                        updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                            currentCustomerData = { id: currentCustomerData.id, ...cust };
+                            // Add redemption
+                            const redemptionId = 'red-' + generateId();
+                            const redemption = {
+                                customerId: currentCustomerData.id,
+                                rewardId: reward.id,
+                                rewardName: reward.name,
+                                pointsUsed: reward.pointsRequired,
+                                redeemedAt: new Date().toLocaleString('en-GB')
+                            };
+                            const redUpdate = {};
+                            redUpdate[redemptionId] = redemption;
+                            updateCacheAndFirebase(redemptionsCache, DB_REFS.redemptions, redUpdate).then(() => {
+                                showToast('Reward Redeemed Successfully!', 'success');
+                                renderRewardsTab();
+                            });
                         });
-                        setDB(STORAGE_KEYS.REDEMPTIONS, redemptions);
-                        showToast('Reward Redeemed Successfully!', 'success');
-                        renderRewardsTab();
                     }
                 }
             );
@@ -1417,47 +1602,47 @@
 
         function renderPointCapTab() {
             refreshCustomerUI();
-            document.getElementById('point-tab-total').textContent = currentUser.points;
-            const expDate = new Date(currentUser.pointExpiry || Date.now());
+            document.getElementById('point-tab-total').textContent = currentCustomerData.points;
+            const expDate = new Date(currentCustomerData.pointExpiry || Date.now());
             document.getElementById('point-tab-expiry').textContent = expDate.toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric'
             });
             const nextGoal = 1000;
-            const pct = Math.min(100, Math.round((currentUser.points / nextGoal) * 100));
-            document.getElementById('point-progress-text').textContent = `${currentUser.points} / ${nextGoal} Points`;
+            const pct = Math.min(100, Math.round((currentCustomerData.points / nextGoal) * 100));
+            document.getElementById('point-progress-text').textContent = `${currentCustomerData.points} / ${nextGoal} Points`;
             document.getElementById('point-progress-bar').style.width = `${pct}%`;
-            document.getElementById('cap-count-badge').textContent = `${currentUser.caps} / 10 CAP`;
+            document.getElementById('cap-count-badge').textContent = `${currentCustomerData.caps} / 10 CAP`;
             const stampGrid = document.getElementById('cap-stamp-grid');
             stampGrid.innerHTML = '';
             for (let i = 1; i <= 10; i++) {
-                const isCollected = i <= currentUser.caps;
+                const isCollected = i <= currentCustomerData.caps;
                 const stamp = document.createElement('div');
                 stamp.className =
                     `aspect-square rounded-2xl border ${isCollected ? 'border-gold-500 bg-gradient-to-br from-coffee-800 to-coffee-950 text-gold-400 shadow-lg stamp-pop' : 'border-gray-800 bg-charcoal-900 text-gray-700'} flex flex-col items-center justify-center p-1 relative`;
                 stamp.innerHTML = `
-                    <i class="fa-solid fa-mug-hot ${isCollected ? 'text-lg text-gold-400' : 'text-sm'}"></i>
-                    <span class="text-[9px] font-bold ${isCollected ? 'text-gold-300' : 'text-gray-600'} mt-0.5">${isCollected ? 'COLLECTED' : i}</span>
-                `;
+                            <i class="fa-solid fa-mug-hot ${isCollected ? 'text-lg text-gold-400' : 'text-sm'}"></i>
+                            <span class="text-[9px] font-bold ${isCollected ? 'text-gold-300' : 'text-gray-600'} mt-0.5">${isCollected ? 'COLLECTED' : i}</span>
+                        `;
                 stampGrid.appendChild(stamp);
             }
         }
 
         function renderProfileTab() {
             refreshCustomerUI();
-            document.getElementById('profile-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
-            document.getElementById('profile-name').textContent = currentUser.name;
-            document.getElementById('profile-membership').textContent = currentUser.membership;
-            document.getElementById('profile-phone').textContent = currentUser.phone;
-            document.getElementById('profile-birthday').textContent = currentUser.birthday || 'Bukan ditetapkan';
-            document.getElementById('profile-point-summary').textContent = `${currentUser.points} Points`;
-            document.getElementById('profile-cap-summary').textContent = `${currentUser.caps} / 10 Caps`;
-            const pointPct = Math.min(100, Math.round((currentUser.points / 1000) * 100));
-            const capPct = Math.min(100, Math.round((currentUser.caps / 10) * 100));
+            document.getElementById('profile-avatar').textContent = currentCustomerData.name.charAt(0).toUpperCase();
+            document.getElementById('profile-name').textContent = currentCustomerData.name;
+            document.getElementById('profile-membership').textContent = currentCustomerData.membership;
+            document.getElementById('profile-phone').textContent = currentCustomerData.phone;
+            document.getElementById('profile-birthday').textContent = currentCustomerData.birthday || 'Bukan ditetapkan';
+            document.getElementById('profile-point-summary').textContent = `${currentCustomerData.points} Points`;
+            document.getElementById('profile-cap-summary').textContent = `${currentCustomerData.caps} / 10 Caps`;
+            const pointPct = Math.min(100, Math.round((currentCustomerData.points / 1000) * 100));
+            const capPct = Math.min(100, Math.round((currentCustomerData.caps / 10) * 100));
             document.getElementById('profile-point-bar').style.width = `${pointPct}%`;
             document.getElementById('profile-cap-bar').style.width = `${capPct}%`;
-            const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS).filter(r => r.customerId === currentUser.id);
+            const redemptions = getCachedData(redemptionsCache).filter(r => r.customerId === currentCustomerData.id);
             const historyContainer = document.getElementById('profile-redemptions-list');
             historyContainer.innerHTML = '';
             if (redemptions.length === 0) {
@@ -1469,15 +1654,15 @@
                 const div = document.createElement('div');
                 div.className = 'glass-panel p-3 rounded-2xl border border-white/5 flex items-center justify-between text-xs';
                 div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-400 flex items-center justify-center"><i class="fa-solid fa-gift"></i></div>
-                        <div>
-                            <p class="font-bold text-white">${red.rewardName}</p>
-                            <p class="text-[10px] text-gray-400">${red.redeemedAt}</p>
-                        </div>
-                    </div>
-                    <span class="font-bold text-rose-400">-${red.pointsUsed} PTS</span>
-                `;
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-400 flex items-center justify-center"><i class="fa-solid fa-gift"></i></div>
+                                <div>
+                                    <p class="font-bold text-white">${red.rewardName}</p>
+                                    <p class="text-[10px] text-gray-400">${red.redeemedAt}</p>
+                                </div>
+                            </div>
+                            <span class="font-bold text-rose-400">-${red.pointsUsed} PTS</span>
+                        `;
                 historyContainer.appendChild(div);
             });
         }
@@ -1492,7 +1677,7 @@
         }
 
         function openEditReviewModal(reviewId) {
-            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const reviews = getCachedData(reviewsCache);
             const rev = reviews.find(r => r.id === reviewId);
             if (!rev) return;
             document.getElementById('review-edit-id').value = rev.id;
@@ -1507,35 +1692,43 @@
             const revId = document.getElementById('review-edit-id').value;
             const comment = document.getElementById('review-comment').value.trim();
             const rating = parseInt(document.getElementById('review-rating').value);
-            let reviews = getDB(STORAGE_KEYS.REVIEWS);
+            let reviews = getCachedData(reviewsCache);
+
             if (revId) {
-                const idx = reviews.findIndex(r => r.id === revId);
-                if (idx !== -1 && reviews[idx].customerId === currentUser.id) {
-                    reviews[idx].comment = comment;
-                    reviews[idx].rating = rating;
-                    showToast('Ulasan dikemaskini!', 'success');
+                const rev = reviews.find(r => r.id === revId);
+                if (rev && rev.customerId === currentCustomerData.id) {
+                    const updateObj = {};
+                    updateObj[revId] = { ...rev, comment, rating };
+                    updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
+                        showToast('Ulasan dikemaskini!', 'success');
+                        closeModal('review-modal');
+                        renderHomeReviews();
+                    });
                 }
             } else {
-                reviews.unshift({
-                    id: 'rev-' + Date.now(),
-                    customerId: currentUser.id,
-                    customerName: currentUser.name,
+                const newRevId = 'rev-' + generateId();
+                const newRev = {
+                    customerId: currentCustomerData.id,
+                    customerName: currentCustomerData.name,
                     rating: rating,
                     comment: comment,
                     createdAt: new Date().toISOString().split('T')[0]
+                };
+                const updateObj = {};
+                updateObj[newRevId] = newRev;
+                updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
+                    showToast('Terima kasih atas ulasan anda!', 'success');
+                    closeModal('review-modal');
+                    renderHomeReviews();
                 });
-                showToast('Terima kasih atas ulasan anda!', 'success');
             }
-            setDB(STORAGE_KEYS.REVIEWS, reviews);
-            closeModal('review-modal');
-            renderHomeReviews();
         }
 
         // Profile edit
         function openEditProfileModal() {
-            document.getElementById('edit-prof-name').value = currentUser.name;
-            document.getElementById('edit-prof-phone').value = currentUser.phone;
-            document.getElementById('edit-prof-birthday').value = currentUser.birthday || '';
+            document.getElementById('edit-prof-name').value = currentCustomerData.name;
+            document.getElementById('edit-prof-phone').value = currentCustomerData.phone;
+            document.getElementById('edit-prof-birthday').value = currentCustomerData.birthday || '';
             document.getElementById('edit-prof-pass').value = '';
             document.getElementById('edit-profile-modal').classList.remove('hidden');
         }
@@ -1545,17 +1738,33 @@
             const name = document.getElementById('edit-prof-name').value.trim();
             const birthday = document.getElementById('edit-prof-birthday').value;
             const newPass = document.getElementById('edit-prof-pass').value;
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-            const idx = customers.findIndex(c => c.id === currentUser.id);
-            if (idx !== -1) {
-                customers[idx].name = name;
-                customers[idx].birthday = birthday;
-                if (newPass) customers[idx].password = newPass;
-                setDB(STORAGE_KEYS.CUSTOMERS, customers);
-                currentUser = customers[idx];
-                showToast('Profil berjaya dikemaskini!', 'success');
-                closeModal('edit-profile-modal');
-                renderProfileTab();
+            const customers = getCachedData(customersCache);
+            const cust = customers.find(c => c.id === currentCustomerData.id);
+            if (cust) {
+                cust.name = name;
+                cust.birthday = birthday;
+                const updateObj = {};
+                updateObj[currentCustomerData.id] = { ...cust };
+                updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                    currentCustomerData = { id: currentCustomerData.id, ...cust };
+                    showToast('Profil berjaya dikemaskini!', 'success');
+                    closeModal('edit-profile-modal');
+                    renderProfileTab();
+                });
+            }
+
+            // Update Firebase Auth display name
+            if (currentUser && name) {
+                currentUser.updateProfile({
+                    displayName: name
+                }).catch(err => console.warn('Could not update display name:', err));
+            }
+
+            // Update password if provided
+            if (newPass && currentUser) {
+                currentUser.updatePassword(newPass)
+                    .then(() => showToast('Kata laluan dikemaskini!', 'success'))
+                    .catch(err => showToast('Ralat kemaskini password: ' + err.message, 'error'));
             }
         }
 
@@ -1609,9 +1818,9 @@
         }
 
         function renderAdminDashboard() {
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-            const rewards = getDB(STORAGE_KEYS.REWARDS);
-            const redemptions = getDB(STORAGE_KEYS.REDEMPTIONS);
+            const customers = getCachedData(customersCache);
+            const rewards = getCachedData(rewardsCache);
+            const redemptions = getCachedData(redemptionsCache);
             const totalPts = customers.reduce((acc, c) => acc + (c.points || 0), 0);
             const totalCaps = customers.reduce((acc, c) => acc + (c.caps || 0), 0);
             document.getElementById('stat-customers').textContent = customers.length;
@@ -1625,7 +1834,7 @@
         // ---- Admin Customers ----
         function renderAdminCustomers() {
             const query = (document.getElementById('admin-search-customer').value || '').toLowerCase();
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS).filter(c =>
+            const customers = getCachedData(customersCache).filter(c =>
                 c.name.toLowerCase().includes(query) ||
                 c.email.toLowerCase().includes(query) ||
                 c.phone.includes(query)
@@ -1641,27 +1850,27 @@
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-charcoal-800/50 transition';
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-white flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${c.name.charAt(0)}</div>
-                        ${c.name}
-                    </td>
-                    <td class="p-4 text-gray-400 truncate max-w-[120px]">${c.email || '-'}</td>
-                    <td class="p-4 font-mono text-gray-400">${c.phone}</td>
-                    <td class="p-4 text-gray-400">${c.birthday || '-'}</td>
-                    <td class="p-4 font-bold text-gold-400">${c.points} PTS</td>
-                    <td class="p-4 font-bold text-coffee-300">${c.caps} / 10</td>
-                    <td class="p-4 text-center flex items-center justify-center gap-1.5 flex-wrap">
-                        <button onclick="openAdminCustomerModal('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-gold-500/20 text-gold-400 hover:bg-gold-500/30 text-[10px] font-semibold transition"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="adminDeleteCustomer('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[10px] font-semibold transition"><i class="fa-solid fa-trash"></i> Hapus</button>
-                    </td>
-                `;
+                            <td class="p-4 font-bold text-white flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-coffee-900 border border-coffee-400/30 text-coffee-300 text-xs font-bold flex items-center justify-center">${c.name.charAt(0)}</div>
+                                ${c.name}
+                            </td>
+                            <td class="p-4 text-gray-400 truncate max-w-[120px]">${c.email || '-'}</td>
+                            <td class="p-4 font-mono text-gray-400">${c.phone}</td>
+                            <td class="p-4 text-gray-400">${c.birthday || '-'}</td>
+                            <td class="p-4 font-bold text-gold-400">${c.points} PTS</td>
+                            <td class="p-4 font-bold text-coffee-300">${c.caps} / 10</td>
+                            <td class="p-4 text-center flex items-center justify-center gap-1.5 flex-wrap">
+                                <button onclick="openAdminCustomerModal('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-gold-500/20 text-gold-400 hover:bg-gold-500/30 text-[10px] font-semibold transition"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="adminDeleteCustomer('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[10px] font-semibold transition"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            </td>
+                        `;
                 tbody.appendChild(tr);
             });
         }
 
         // Admin delete customer
         function adminDeleteCustomer(custId) {
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const customers = getCachedData(customersCache);
             const cust = customers.find(c => c.id === custId);
             if (!cust) return;
             showConfirmModal(
@@ -1669,22 +1878,42 @@
                 `Adakah anda pasti mahu menghapuskan pelanggan "${cust.name}" (${cust.phone})? Tindakan ini tidak boleh dibatalkan.`,
                 'fa-solid fa-trash text-rose-400',
                 function() {
-                    let updated = getDB(STORAGE_KEYS.CUSTOMERS).filter(c => c.id !== custId);
-                    setDB(STORAGE_KEYS.CUSTOMERS, updated);
-                    // Also remove their reviews and redemptions
-                    let reviews = getDB(STORAGE_KEYS.REVIEWS).filter(r => r.customerId !== custId);
-                    setDB(STORAGE_KEYS.REVIEWS, reviews);
-                    let redemptions = getDB(STORAGE_KEYS.REDEMPTIONS).filter(r => r.customerId !== custId);
-                    setDB(STORAGE_KEYS.REDEMPTIONS, redemptions);
-                    showToast(`Pelanggan ${cust.name} telah dihapuskan.`, 'info');
-                    renderAdminDashboard();
+                    // Remove from customers
+                    removeFromCacheAndFirebase(customersCache, DB_REFS.customers, custId).then(() => {
+                        // Also remove their reviews
+                        const reviews = getCachedData(reviewsCache);
+                        const userReviews = reviews.filter(r => r.customerId === custId);
+                        let reviewsToRemove = {};
+                        userReviews.forEach(r => { reviewsToRemove[r.id] = null; });
+                        // Remove redemptions
+                        const redemptions = getCachedData(redemptionsCache);
+                        const userRedemptions = redemptions.filter(r => r.customerId === custId);
+                        let redemptionsToRemove = {};
+                        userRedemptions.forEach(r => { redemptionsToRemove[r.id] = null; });
+
+                        // Update reviews and redemptions
+                        const reviewPromises = Object.keys(reviewsToRemove).length > 0 ?
+                            Promise.all(Object.keys(reviewsToRemove).map(id =>
+                                removeFromCacheAndFirebase(reviewsCache, DB_REFS.reviews, id)
+                            )) : Promise.resolve();
+
+                        const redemptionPromises = Object.keys(redemptionsToRemove).length > 0 ?
+                            Promise.all(Object.keys(redemptionsToRemove).map(id =>
+                                removeFromCacheAndFirebase(redemptionsCache, DB_REFS.redemptions, id)
+                            )) : Promise.resolve();
+
+                        Promise.all([reviewPromises, redemptionPromises]).then(() => {
+                            showToast(`Pelanggan ${cust.name} telah dihapuskan.`, 'info');
+                            renderAdminDashboard();
+                        });
+                    });
                 }
             );
         }
 
         // Admin edit customer (with password field)
         function openAdminCustomerModal(custId) {
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
+            const customers = getCachedData(customersCache);
             const cust = customers.find(c => c.id === custId);
             if (!cust) return;
             document.getElementById('adm-cust-id').value = cust.id;
@@ -1708,19 +1937,29 @@
             const caps = parseInt(document.getElementById('adm-cust-caps').value);
             const newPass = document.getElementById('adm-cust-password').value;
 
-            const customers = getDB(STORAGE_KEYS.CUSTOMERS);
-            const idx = customers.findIndex(c => c.id === id);
-            if (idx !== -1) {
-                customers[idx].name = name;
-                customers[idx].email = email;
-                customers[idx].birthday = birthday;
-                customers[idx].points = points;
-                customers[idx].caps = caps;
-                if (newPass) customers[idx].password = newPass;
-                setDB(STORAGE_KEYS.CUSTOMERS, customers);
-                showToast('Data pelanggan dikemaskini!', 'success');
-                closeModal('admin-edit-customer-modal');
-                renderAdminDashboard();
+            const customers = getCachedData(customersCache);
+            const cust = customers.find(c => c.id === id);
+            if (cust) {
+                cust.name = name;
+                cust.email = email;
+                cust.birthday = birthday;
+                cust.points = points;
+                cust.caps = caps;
+                if (newPass) {
+                    cust.password = newPass;
+                    // Also update Firebase Auth password if email matches current user
+                    if (currentUser && currentUser.email === email) {
+                        currentUser.updatePassword(newPass)
+                            .catch(err => console.warn('Could not update password:', err));
+                    }
+                }
+                const updateObj = {};
+                updateObj[id] = { ...cust };
+                updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj).then(() => {
+                    showToast('Data pelanggan dikemaskini!', 'success');
+                    closeModal('admin-edit-customer-modal');
+                    renderAdminDashboard();
+                });
             }
         }
 
@@ -1736,26 +1975,26 @@
 
         // ---- Admin Rewards ----
         function renderAdminRewards() {
-            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const rewards = getCachedData(rewardsCache);
             const container = document.getElementById('admin-rewards-grid');
             container.innerHTML = '';
             rewards.forEach(r => {
                 const card = document.createElement('div');
                 card.className = 'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-3 flex flex-col justify-between';
                 card.innerHTML = `
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-white text-sm">${r.name}</h4>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.active ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-500'}">${r.active ? 'Active' : 'Disabled'}</span>
-                        </div>
-                        <p class="text-xs text-gray-400">${r.description}</p>
-                        <p class="text-xs font-bold text-gold-400"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</p>
-                    </div>
-                    <div class="flex gap-2 pt-2 border-t border-gray-800">
-                        <button onclick="openEditRewardModal('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
-                        <button onclick="deleteReward('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
-                    </div>
-                `;
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-bold text-white text-sm">${r.name}</h4>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.active ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-500'}">${r.active ? 'Active' : 'Disabled'}</span>
+                                </div>
+                                <p class="text-xs text-gray-400">${r.description}</p>
+                                <p class="text-xs font-bold text-gold-400"><i class="fa-solid fa-coins"></i> ${r.pointsRequired} Points</p>
+                            </div>
+                            <div class="flex gap-2 pt-2 border-t border-gray-800">
+                                <button onclick="openEditRewardModal('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
+                                <button onclick="deleteReward('${r.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
+                            </div>
+                        `;
                 container.appendChild(card);
             });
         }
@@ -1772,7 +2011,7 @@
         }
 
         function openEditRewardModal(rewardId) {
-            const rewards = getDB(STORAGE_KEYS.REWARDS);
+            const rewards = getCachedData(rewardsCache);
             const r = rewards.find(item => item.id === rewardId);
             if (!r) return;
             document.getElementById('reward-edit-id').value = r.id;
@@ -1794,18 +2033,25 @@
             const image = document.getElementById('r-image').value.trim() ||
                 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500';
             const active = document.getElementById('r-active').checked;
-            let rewards = getDB(STORAGE_KEYS.REWARDS);
+
             if (id) {
-                const idx = rewards.findIndex(r => r.id === id);
-                if (idx !== -1) { rewards[idx] = { id, name, description: desc, pointsRequired: points, image, active }; }
+                const updateObj = {};
+                updateObj[id] = { name, description: desc, pointsRequired: points, image, active };
+                updateCacheAndFirebase(rewardsCache, DB_REFS.rewards, updateObj).then(() => {
+                    showToast('Reward disimpan!', 'success');
+                    closeModal('reward-modal');
+                    renderAdminRewards();
+                });
             } else {
-                rewards.push({ id: 'rew-' + Date.now(), name, description: desc, pointsRequired: points, image,
-                    active });
+                const newId = 'rew-' + generateId();
+                const updateObj = {};
+                updateObj[newId] = { name, description: desc, pointsRequired: points, image, active };
+                updateCacheAndFirebase(rewardsCache, DB_REFS.rewards, updateObj).then(() => {
+                    showToast('Reward disimpan!', 'success');
+                    closeModal('reward-modal');
+                    renderAdminRewards();
+                });
             }
-            setDB(STORAGE_KEYS.REWARDS, rewards);
-            showToast('Reward disimpan!', 'success');
-            closeModal('reward-modal');
-            renderAdminRewards();
         }
 
         function deleteReward(rewardId) {
@@ -1814,36 +2060,36 @@
                 'Adakah anda pasti mahu memadam reward ini?',
                 'fa-solid fa-trash text-rose-400',
                 function() {
-                    let rewards = getDB(STORAGE_KEYS.REWARDS).filter(r => r.id !== rewardId);
-                    setDB(STORAGE_KEYS.REWARDS, rewards);
-                    showToast('Reward dipadam.', 'info');
-                    renderAdminRewards();
+                    removeFromCacheAndFirebase(rewardsCache, DB_REFS.rewards, rewardId).then(() => {
+                        showToast('Reward dipadam.', 'info');
+                        renderAdminRewards();
+                    });
                 }
             );
         }
 
         // ---- Admin Promotions ----
         function renderAdminPromotions() {
-            const promos = getDB(STORAGE_KEYS.PROMOTIONS);
+            const promos = getCachedData(promotionsCache);
             const container = document.getElementById('admin-promos-grid');
             container.innerHTML = '';
             promos.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-3';
                 card.innerHTML = `
-                    <div class="flex gap-4 items-center">
-                        <img src="${p.image}" class="w-20 h-20 rounded-xl object-cover bg-black" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Promo'">
-                        <div class="space-y-1 flex-1">
-                            <h4 class="font-bold text-white text-sm">${p.title}</h4>
-                            <p class="text-xs text-gray-400 line-clamp-2">${p.description}</p>
-                            <p class="text-[10px] text-gold-400">${p.startDate} hingga ${p.endDate}</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 pt-2 border-t border-gray-800">
-                        <button onclick="openEditPromoModal('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
-                        <button onclick="deletePromo('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
-                    </div>
-                `;
+                            <div class="flex gap-4 items-center">
+                                <img src="${p.image}" class="w-20 h-20 rounded-xl object-cover bg-black" onerror="this.src='https://placehold.co/200x200/2b160b/c89666?text=Promo'">
+                                <div class="space-y-1 flex-1">
+                                    <h4 class="font-bold text-white text-sm">${p.title}</h4>
+                                    <p class="text-xs text-gray-400 line-clamp-2">${p.description}</p>
+                                    <p class="text-[10px] text-gold-400">${p.startDate} hingga ${p.endDate}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-2 border-t border-gray-800">
+                                <button onclick="openEditPromoModal('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold">Edit</button>
+                                <button onclick="deletePromo('${p.id}')" class="w-1/2 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Delete</button>
+                            </div>
+                        `;
                 container.appendChild(card);
             });
         }
@@ -1862,7 +2108,7 @@
         }
 
         function openEditPromoModal(promoId) {
-            const promos = getDB(STORAGE_KEYS.PROMOTIONS);
+            const promos = getCachedData(promotionsCache);
             const p = promos.find(item => item.id === promoId);
             if (!p) return;
             document.getElementById('promo-edit-id').value = p.id;
@@ -1886,18 +2132,25 @@
             const startDate = document.getElementById('p-start').value;
             const endDate = document.getElementById('p-end').value;
             const active = document.getElementById('p-active').checked;
-            let promos = getDB(STORAGE_KEYS.PROMOTIONS);
+
             if (id) {
-                const idx = promos.findIndex(p => p.id === id);
-                if (idx !== -1) { promos[idx] = { id, title, description: desc, image, startDate, endDate, active }; }
+                const updateObj = {};
+                updateObj[id] = { title, description: desc, image, startDate, endDate, active };
+                updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
+                    showToast('Promosi disimpan!', 'success');
+                    closeModal('promo-modal');
+                    renderAdminPromotions();
+                });
             } else {
-                promos.push({ id: 'promo-' + Date.now(), title, description: desc, image, startDate, endDate,
-                    active });
+                const newId = 'promo-' + generateId();
+                const updateObj = {};
+                updateObj[newId] = { title, description: desc, image, startDate, endDate, active };
+                updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
+                    showToast('Promosi disimpan!', 'success');
+                    closeModal('promo-modal');
+                    renderAdminPromotions();
+                });
             }
-            setDB(STORAGE_KEYS.PROMOTIONS, promos);
-            showToast('Promosi disimpan!', 'success');
-            closeModal('promo-modal');
-            renderAdminPromotions();
         }
 
         function deletePromo(promoId) {
@@ -1906,17 +2159,17 @@
                 'Adakah anda pasti mahu memadam promosi ini?',
                 'fa-solid fa-trash text-rose-400',
                 function() {
-                    let promos = getDB(STORAGE_KEYS.PROMOTIONS).filter(p => p.id !== promoId);
-                    setDB(STORAGE_KEYS.PROMOTIONS, promos);
-                    showToast('Promosi dipadam.', 'info');
-                    renderAdminPromotions();
+                    removeFromCacheAndFirebase(promotionsCache, DB_REFS.promotions, promoId).then(() => {
+                        showToast('Promosi dipadam.', 'info');
+                        renderAdminPromotions();
+                    });
                 }
             );
         }
 
         // ---- Admin Reviews ----
         function renderAdminReviews() {
-            const reviews = getDB(STORAGE_KEYS.REVIEWS);
+            const reviews = getCachedData(reviewsCache);
             const container = document.getElementById('admin-reviews-list');
             container.innerHTML = '';
             reviews.forEach(r => {
@@ -1924,16 +2177,16 @@
                 div.className =
                     'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-2 flex items-center justify-between';
                 div.innerHTML = `
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-white text-xs">${r.customerName}</span>
-                            <span class="text-[10px] text-gold-400">${'⭐'.repeat(r.rating)}</span>
-                        </div>
-                        <p class="text-xs text-gray-300">${r.comment}</p>
-                        <p class="text-[10px] text-gray-500">${r.createdAt}</p>
-                    </div>
-                    <button onclick="adminDeleteReview('${r.id}')" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Padam</button>
-                `;
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-white text-xs">${r.customerName}</span>
+                                    <span class="text-[10px] text-gold-400">${'⭐'.repeat(r.rating)}</span>
+                                </div>
+                                <p class="text-xs text-gray-300">${r.comment}</p>
+                                <p class="text-[10px] text-gray-500">${r.createdAt}</p>
+                            </div>
+                            <button onclick="adminDeleteReview('${r.id}')" class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold">Padam</button>
+                        `;
                 container.appendChild(div);
             });
         }
@@ -1944,10 +2197,10 @@
                 'Adakah anda pasti mahu memadam ulasan pelanggan ini?',
                 'fa-solid fa-trash text-rose-400',
                 function() {
-                    let reviews = getDB(STORAGE_KEYS.REVIEWS).filter(r => r.id !== revId);
-                    setDB(STORAGE_KEYS.REVIEWS, reviews);
-                    showToast('Ulasan dipadam oleh admin.', 'info');
-                    renderAdminReviews();
+                    removeFromCacheAndFirebase(reviewsCache, DB_REFS.reviews, revId).then(() => {
+                        showToast('Ulasan dipadam oleh admin.', 'info');
+                        renderAdminReviews();
+                    });
                 }
             );
         }
