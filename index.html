@@ -20,7 +20,6 @@
 
     <!-- ===== FIREBASE INITIALIZATION ===== -->
     <script>
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCvFgF3hvpj4E7y7xg1VfoE9A7h8K_oVsk",
             authDomain: "selagi-coffee-vip.firebaseapp.com",
@@ -32,13 +31,12 @@
             databaseURL: "https://selagi-coffee-vip-default-rtdb.firebaseio.com/"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const analytics = firebase.analytics(app);
         const database = firebase.database();
         const storage = firebase.storage();
 
-        console.log('🔥 Firebase initialized successfully with Realtime Database and Storage.');
+        console.log('🔥 Firebase initialized successfully.');
     </script>
 
     <!-- Google Fonts -->
@@ -92,7 +90,6 @@
     </script>
 
     <style>
-        /* Custom scrollbars */
         ::-webkit-scrollbar {
             width: 5px;
             height: 5px;
@@ -200,14 +197,12 @@
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* Password strength indicator */
         .strength-bar {
             height: 3px;
             border-radius: 4px;
             transition: width 0.3s ease, background 0.3s ease;
         }
 
-        /* Staff FAB */
         .staff-fab {
             position: fixed;
             bottom: 100px;
@@ -233,7 +228,6 @@
         .staff-fab i {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
-        /* For mobile, adjust */
         @media (max-width: 480px) {
             .staff-fab {
                 bottom: 90px;
@@ -244,7 +238,6 @@
             }
         }
 
-        /* Smooth modal transitions */
         .modal-overlay {
             transition: opacity 0.3s ease;
         }
@@ -260,7 +253,6 @@
             opacity: 1 !important;
         }
 
-        /* Image preview styling */
         .image-preview-container {
             position: relative;
             display: inline-block;
@@ -287,7 +279,6 @@
             background: #b91c1c;
         }
 
-        /* Upload progress */
         .upload-progress-container {
             width: 100%;
             background: #1e1e1e;
@@ -303,6 +294,19 @@
             transition: width 0.3s ease;
             width: 0%;
         }
+
+        .gold-btn:disabled,
+        .coffee-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Toast extra */
+        .toast-uploading {
+            background: rgba(30, 30, 30, 0.92) !important;
+            border-color: rgba(212, 175, 55, 0.4) !important;
+        }
     </style>
 </head>
 <body class="bg-charcoal-950 text-gray-100 font-sans antialiased min-h-screen selection:bg-coffee-400 selection:text-black">
@@ -311,7 +315,7 @@
     <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-20 opacity-0 pointer-events-none transition-all duration-300 w-[90%] max-w-sm">
         <div id="toast-body" class="glass-panel px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-gold-500/30">
             <i id="toast-icon" class="fa-solid fa-circle-check text-gold-400 text-xl"></i>
-            <p id="toast-msg" class="text-sm font-medium text-gray-100">Notification message</p>
+            <p id="toast-msg" class="text-sm font-medium text-gray-100">Notification</p>
         </div>
     </div>
 
@@ -330,12 +334,11 @@
         </div>
     </div>
 
-    <!-- MAIN WRAPPER -->
+    <!-- ===== MAIN WRAPPER ===== -->
     <div id="main-app" class="w-full min-h-screen">
 
-        <!-- CUSTOMER AUTH VIEW -->
+        <!-- ===== CUSTOMER AUTH VIEW ===== -->
         <section id="auth-view" class="app-container flex flex-col justify-between p-6">
-            <!-- Header branding -->
             <div class="pt-8 pb-4 text-center">
                 <div class="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-tr from-coffee-900 via-charcoal-800 to-coffee-800 border-2 border-gold-500/40 shadow-xl mb-4 overflow-hidden">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKNTcswI0MKvgwch0V6Lal3qR08ozQYkBACiB7xYPitnVeS5yWka1j3Zg&s=10" alt="Selagi Coffee Logo" class="w-full h-full object-cover">
@@ -344,13 +347,12 @@
                 <p class="text-[10px] tracking-widest text-gold-400 font-semibold uppercase mt-1">Artisan Members Club</p>
             </div>
 
-            <!-- LOGIN FORM – Email + Password (more secure) -->
+            <!-- LOGIN -->
             <div id="login-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-white">Welcome Back 👋</h2>
                     <p class="text-xs text-gray-400 mt-1">Log masuk menggunakan emel & kata laluan.</p>
                 </div>
-
                 <form id="form-login" onsubmit="handleCustomerLogin(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1.5">Alamat Emel</label>
@@ -359,7 +361,6 @@
                             <input type="email" id="login-email" required placeholder="nafi@selagi.coffee" class="w-full pl-10 pr-4 py-3 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400 transition" autocomplete="email">
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1.5">Kata Laluan</label>
                         <div class="relative">
@@ -370,7 +371,6 @@
                             </button>
                         </div>
                     </div>
-
                     <div class="flex justify-between items-center">
                         <button type="button" onclick="handleForgotPassword()" class="text-xs text-coffee-400 hover:text-gold-400 transition flex items-center gap-1.5">
                             <i class="fa-solid fa-key"></i> Lupa Kata Laluan?
@@ -379,7 +379,6 @@
                             <i class="fa-solid fa-circle-question"></i> Bantuan
                         </button>
                     </div>
-
                     <div class="pt-2 space-y-2.5">
                         <button type="submit" class="w-full py-3.5 rounded-xl gold-btn text-sm font-bold tracking-wide shadow-lg">LOG MASUK</button>
                         <button type="button" onclick="toggleAuthMode('register')" class="w-full py-3.5 rounded-xl bg-charcoal-800 text-coffee-300 hover:bg-gray-800 border border-coffee-400/30 text-sm font-bold transition">DAFTAR AKAUN</button>
@@ -387,34 +386,29 @@
                 </form>
             </div>
 
-            <!-- REGISTER FORM – with Email & Password -->
+            <!-- REGISTER -->
             <div id="register-box" class="glass-panel p-6 rounded-3xl my-auto border border-coffee-400/20 shadow-2xl hidden">
                 <div class="mb-5">
                     <h2 class="text-xl font-bold text-white">Daftar Keahlian ✨</h2>
                     <p class="text-xs text-gray-400 mt-1">Sertai Selagi Coffee Artisan Members hari ini.</p>
                 </div>
-
                 <form id="form-register" onsubmit="handleCustomerRegister(event)" class="space-y-3.5">
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Nama Penuh</label>
                         <input type="text" id="reg-name" required placeholder="Contoh: Nafi Ahmad" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Emel</label>
                         <input type="email" id="reg-email" required placeholder="nafi@selagi.coffee" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">No. Telefon</label>
                         <input type="tel" id="reg-phone" required placeholder="011XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Tarikh Lahir</label>
                         <input type="date" id="reg-birthday" required class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400">
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Kata Laluan</label>
                         <div class="relative">
@@ -432,7 +426,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Sahkan Kata Laluan</label>
                         <div class="relative">
@@ -443,7 +436,6 @@
                         </div>
                         <p id="reg-pass-match" class="text-[10px] mt-1 hidden"></p>
                     </div>
-
                     <div class="pt-2 space-y-2">
                         <button type="submit" class="w-full py-3.5 rounded-xl gold-btn text-sm font-bold shadow-lg">DAFTAR SEKARANG</button>
                         <button type="button" onclick="toggleAuthMode('login')" class="w-full py-2.5 text-xs text-gray-400 hover:text-white transition">Sudah ada akaun? Log Masuk</button>
@@ -451,7 +443,6 @@
                 </form>
             </div>
 
-            <!-- Staff portal link (kept for admin) -->
             <div class="pb-4 text-center">
                 <button onclick="showStaffLoginModal()" class="text-[11px] text-gray-500 hover:text-coffee-300 transition flex items-center justify-center gap-1.5 mx-auto">
                     <i class="fa-solid fa-user-shield"></i> Staff & Barista Login
@@ -459,9 +450,8 @@
             </div>
         </section>
 
-        <!-- CUSTOMER DASHBOARD VIEW -->
+        <!-- ===== CUSTOMER DASHBOARD ===== -->
         <section id="customer-dashboard" class="app-container pb-28 hidden">
-            <!-- Top App Bar -->
             <header class="sticky top-0 z-40 glass-panel px-5 py-4 border-b border-white/5 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-coffee-900 border border-gold-500/40 flex items-center justify-center overflow-hidden">
@@ -477,9 +467,8 @@
                 </button>
             </header>
 
-            <!-- TAB CONTENTS -->
             <main class="p-5">
-                <!-- HOME TAB -->
+                <!-- HOME -->
                 <div id="tab-home" class="tab-content space-y-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -491,7 +480,6 @@
                         <span class="px-2.5 py-1 rounded-full bg-coffee-900/60 border border-coffee-400/30 text-[10px] font-semibold text-coffee-300">VIP Artisan</span>
                     </div>
 
-                    <!-- Membership Card -->
                     <div class="gold-card-bg rounded-3xl p-6 relative overflow-hidden shadow-2xl">
                         <div class="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-coffee-500/10 blur-2xl pointer-events-none"></div>
                         <div class="absolute -left-10 -top-10 w-32 h-32 rounded-full bg-gold-500/10 blur-xl pointer-events-none"></div>
@@ -518,7 +506,6 @@
                         </div>
                     </div>
 
-                    <!-- Promotion Carousel -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
@@ -529,7 +516,6 @@
                         <div id="home-promotions-list" class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 snap-x"></div>
                     </div>
 
-                    <!-- Member Reviews -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
@@ -541,7 +527,7 @@
                     </div>
                 </div>
 
-                <!-- REWARDS TAB -->
+                <!-- REWARD -->
                 <div id="tab-reward" class="tab-content space-y-5 hidden">
                     <div>
                         <h1 class="text-xl font-bold text-white">Member Rewards 🎁</h1>
@@ -562,7 +548,7 @@
                     <div id="rewards-grid" class="grid grid-cols-1 gap-4"></div>
                 </div>
 
-                <!-- POINT & CAP TAB -->
+                <!-- POINT & CAP -->
                 <div id="tab-point" class="tab-content space-y-6 hidden">
                     <div>
                         <h1 class="text-xl font-bold text-white">POINT & CAP ⭐</h1>
@@ -609,7 +595,7 @@
                     </div>
                 </div>
 
-                <!-- PROFILE TAB -->
+                <!-- PROFILE -->
                 <div id="tab-profile" class="tab-content space-y-6 hidden">
                     <div class="flex items-center justify-between">
                         <div>
@@ -620,7 +606,6 @@
                             <i class="fa-solid fa-pen-to-square text-xs"></i> Edit Profile
                         </button>
                     </div>
-
                     <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
                         <div class="flex items-center gap-4 pb-4 border-b border-white/5">
                             <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-coffee-800 to-coffee-600 border-2 border-gold-500/40 text-white flex items-center justify-center text-2xl font-bold font-serif shadow-lg" id="profile-avatar">N</div>
@@ -641,7 +626,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="glass-panel p-6 rounded-3xl border border-coffee-400/20 space-y-4">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider">Ringkasan Kemajuan</h4>
                         <div class="space-y-1.5">
@@ -663,7 +647,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="space-y-3">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-clock-rotate-left text-gold-400"></i> Sejarah Penebusan
@@ -673,7 +656,7 @@
                 </div>
             </main>
 
-            <!-- FIXED BOTTOM NAV -->
+            <!-- Bottom Nav -->
             <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] glass-panel border-t border-white/10 px-4 py-2 z-50 rounded-t-3xl shadow-2xl">
                 <div class="grid grid-cols-4 gap-1">
                     <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center py-2 text-gold-400 transition">
@@ -695,13 +678,13 @@
                 </div>
             </nav>
 
-            <!-- STAFF FAB (Floating Action Button) - now for redeem -->
+            <!-- STAFF FAB (Redeem) -->
             <button id="staffFab" class="staff-fab" onclick="handleRedeemFabClick()" title="Staff Redeem">
                 <i class="fa-solid fa-coins"></i>
             </button>
         </section>
 
-        <!-- STAFF DASHBOARD VIEW (Admin) -->
+        <!-- ===== STAFF DASHBOARD ===== -->
         <section id="staff-dashboard" class="min-h-screen bg-charcoal-950 p-4 md:p-8 hidden">
             <header class="max-w-7xl mx-auto mb-8 bg-charcoal-900 rounded-3xl p-4 md:p-6 border border-coffee-400/20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -756,7 +739,7 @@
                     <button onclick="switchAdminTab('reviews')" id="atab-reviews" class="atab-btn px-5 py-2.5 rounded-xl bg-charcoal-800 text-gray-300 font-bold text-xs transition hover:bg-gray-700">💬 Reviews</button>
                 </div>
 
-                <!-- ADMIN CUSTOMERS TAB -->
+                <!-- ADMIN CUSTOMERS -->
                 <div id="admin-sec-customers" class="admin-sec space-y-4">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <h2 class="text-lg font-bold text-white">Customer Management</h2>
@@ -765,7 +748,6 @@
                             <input type="text" id="admin-search-customer" oninput="renderAdminCustomers()" placeholder="Cari nama, email atau phone..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500">
                         </div>
                     </div>
-
                     <div class="bg-charcoal-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
                         <table class="w-full text-left border-collapse min-w-[750px]">
                             <thead>
@@ -784,7 +766,7 @@
                     </div>
                 </div>
 
-                <!-- ADMIN REWARDS TAB -->
+                <!-- ADMIN REWARDS -->
                 <div id="admin-sec-rewards" class="admin-sec space-y-4 hidden">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-bold text-white">Reward Management</h2>
@@ -793,7 +775,7 @@
                     <div id="admin-rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
 
-                <!-- ADMIN PROMOTIONS TAB -->
+                <!-- ADMIN PROMOTIONS -->
                 <div id="admin-sec-promotions" class="admin-sec space-y-4 hidden">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-bold text-white">Promotion Management</h2>
@@ -802,7 +784,7 @@
                     <div id="admin-promos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
 
-                <!-- ADMIN REVIEWS TAB -->
+                <!-- ADMIN REVIEWS -->
                 <div id="admin-sec-reviews" class="admin-sec space-y-4 hidden">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-bold text-white">Customer Reviews</h2>
@@ -811,12 +793,11 @@
                 </div>
             </div>
         </section>
-
     </div>
 
     <!-- ===== MODALS ===== -->
 
-    <!-- Staff Login Modal (Admin) -->
+    <!-- Staff Login Modal -->
     <div id="staff-login-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="staff-login-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -835,7 +816,7 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
                     <input type="password" id="staff-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white focus:outline-none focus:border-gold-500">
                 </div>
-                <p class="text-[10px] text-gray-500 italic">* Demo credentials: ID: admin | Pass: Admin24</p>
+                <p class="text-[10px] text-gray-500 italic">* Demo: ID: admin | Pass: Admin2024</p>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeModal('staff-login-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
                     <button type="submit" class="w-1/2 py-2.5 rounded-xl gold-btn text-xs font-bold">Log Masuk</button>
@@ -844,7 +825,7 @@
         </div>
     </div>
 
-    <!-- Redeem Modal (FAB) -->
+    <!-- Redeem Modal -->
     <div id="redeem-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="redeem-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -853,7 +834,6 @@
                 </h3>
                 <button onclick="closeModal('redeem-modal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <!-- Step 1: PIN verification -->
             <div id="redeem-step-pin">
                 <p class="text-xs text-gray-400 mb-4">Masukkan PIN staff yang sah untuk menambah point atau cap.</p>
                 <form onsubmit="handleRedeemPin(event)" class="space-y-4">
@@ -867,7 +847,6 @@
                     </div>
                 </form>
             </div>
-            <!-- Step 2: Add points/caps (hidden initially) -->
             <div id="redeem-step-action" class="hidden">
                 <p class="text-xs text-gray-400 mb-4">PIN sah! Anda boleh tambah point atau cap untuk pelanggan ini.</p>
                 <div class="space-y-4">
@@ -891,9 +870,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- REVIEW MODAL – with image upload (JPEG/PNG only)          -->
-    <!-- ========================================================== -->
+    <!-- ===== REVIEW MODAL (dengan upload gambar semua format) ===== -->
     <div id="review-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="review-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -916,14 +893,14 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Ulasan Anda</label>
                     <textarea id="review-comment" required rows="3" placeholder="Kongsikan pengalaman kopi anda di Selagi Coffee..." class="w-full px-4 py-2.5 rounded-xl bg-charcoal-900 border border-gray-800 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-coffee-400"></textarea>
                 </div>
-                <!-- ===== REVIEW IMAGE UPLOAD (JPEG/PNG ONLY) ===== -->
+                <!-- Gambar -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar (JPEG / PNG sahaja)</label>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar (semua format)</label>
                     <div class="flex flex-wrap items-center gap-3">
                         <button type="button" onclick="document.getElementById('review-image-file').click()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">
                             <i class="fa-solid fa-image"></i> Pilih Gambar
                         </button>
-                        <input type="file" id="review-image-file" accept="image/jpeg,image/png" class="hidden" onchange="handleReviewImageSelect(event)">
+                        <input type="file" id="review-image-file" accept="image/*" class="hidden" onchange="handleReviewImageSelect(event)">
                         <span id="review-image-filename" class="text-xs text-gray-400">Tiada gambar dipilih</span>
                     </div>
                     <div id="review-image-preview" class="mt-2 hidden">
@@ -933,11 +910,11 @@
                         </div>
                     </div>
                     <input type="hidden" id="review-image-url" value="">
-                    <!-- Upload progress -->
                     <div id="review-upload-progress" class="upload-progress-container hidden">
                         <div id="review-upload-progress-bar" class="upload-progress-bar"></div>
+                        <span id="review-upload-percent" class="text-[10px] text-gray-400 block text-right mt-0.5">0%</span>
                     </div>
-                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 5MB. Format: JPEG / PNG</p>
+                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 2MB. Semua format gambar diterima.</p>
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeModal('review-modal')" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 text-xs font-semibold">Batal</button>
@@ -947,7 +924,7 @@
         </div>
     </div>
 
-    <!-- Customer Profile Edit Modal -->
+    <!-- Edit Profile Modal -->
     <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="edit-profile-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -979,7 +956,7 @@
         </div>
     </div>
 
-    <!-- Admin Edit Customer Modal – with Password field -->
+    <!-- Admin Edit Customer Modal -->
     <div id="admin-edit-customer-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-gold-500/30 modal-card scale-out" id="admin-edit-customer-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -1069,9 +1046,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- PROMOTION MODAL – with image upload (JPEG/PNG only)       -->
-    <!-- ========================================================== -->
+    <!-- ===== PROMOTION MODAL (dengan upload gambar semua format) ===== -->
     <div id="promo-modal" class="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden modal-overlay">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-coffee-400/30 modal-card scale-out" id="promo-modal-card">
             <div class="flex items-center justify-between mb-4">
@@ -1088,14 +1063,14 @@
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Keterangan</label>
                     <input type="text" id="p-desc" required placeholder="Try our newest artisan creation" class="w-full px-3 py-2 rounded-xl bg-charcoal-900 border border-gray-800 text-xs text-white">
                 </div>
-                <!-- ===== PROMO IMAGE UPLOAD (JPEG/PNG ONLY) ===== -->
+                <!-- Gambar Promosi -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar Promosi (JPEG / PNG sahaja)</label>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Gambar Promosi (semua format)</label>
                     <div class="flex flex-wrap items-center gap-3">
                         <button type="button" onclick="document.getElementById('promo-image-file').click()" class="px-4 py-2 rounded-xl coffee-btn text-xs font-bold shadow">
                             <i class="fa-solid fa-image"></i> Pilih Gambar
                         </button>
-                        <input type="file" id="promo-image-file" accept="image/jpeg,image/png" class="hidden" onchange="handlePromoImageSelect(event)">
+                        <input type="file" id="promo-image-file" accept="image/*" class="hidden" onchange="handlePromoImageSelect(event)">
                         <span id="promo-image-filename" class="text-xs text-gray-400">Tiada gambar dipilih</span>
                     </div>
                     <div id="promo-image-preview" class="mt-2 hidden">
@@ -1105,11 +1080,11 @@
                         </div>
                     </div>
                     <input type="hidden" id="promo-image-url" value="">
-                    <!-- Upload progress -->
                     <div id="promo-upload-progress" class="upload-progress-container hidden">
                         <div id="promo-upload-progress-bar" class="upload-progress-bar"></div>
+                        <span id="promo-upload-percent" class="text-[10px] text-gray-400 block text-right mt-0.5">0%</span>
                     </div>
-                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 5MB. Format: JPEG / PNG</p>
+                    <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-circle-info"></i> Saiz maksimum: 5MB. Semua format gambar diterima.</p>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -1133,16 +1108,14 @@
         </div>
     </div>
 
-
     <!-- ============================================================== -->
-    <!-- ===== JS APPLICATION LOGIC (DENGAN FIREBASE AUTH & STORAGE) ===== -->
+    <!-- ===== JS APPLICATION LOGIC (DENGAN FIX UPLOAD) ===== -->
     <!-- ============================================================== -->
     <script>
-        /* ==========================================================================
+        /* ================================================================
            1. FIREBASE AUTH + DATABASE + STORAGE HELPERS
-           ========================================================================== */
+           ================================================================ */
 
-        // Firebase Realtime Database references
         const DB_REFS = {
             customers: database.ref('customers'),
             rewards: database.ref('rewards'),
@@ -1151,41 +1124,31 @@
             redemptions: database.ref('redemptions'),
         };
 
-        // Helper to get data once from Firebase Realtime Database
         function getFirebaseData(ref) {
             return ref.once('value').then(snapshot => snapshot.val() || {});
         }
 
-        // Helper to set data to Firebase Realtime Database
         function setFirebaseData(ref, data) {
             return ref.set(data);
         }
 
-        // Helper to push data to Firebase Realtime Database (generates unique key)
         function pushFirebaseData(ref, data) {
             return ref.push(data);
         }
 
-        // Helper to update specific child in Firebase Realtime Database
         function updateFirebaseData(ref, data) {
             return ref.update(data);
         }
 
-        // Helper to remove data from Firebase Realtime Database
         function removeFirebaseData(ref) {
             return ref.remove();
         }
 
-        // Convert Firebase object to array with IDs
         function firebaseObjToArray(obj) {
             if (!obj) return [];
-            return Object.keys(obj).map(key => ({
-                id: key,
-                ...obj[key]
-            }));
+            return Object.keys(obj).map(key => ({ id: key, ...obj[key] }));
         }
 
-        // Convert array to Firebase object (keyed by id)
         function arrayToFirebaseObj(arr) {
             const obj = {};
             arr.forEach(item => {
@@ -1196,69 +1159,70 @@
             return obj;
         }
 
-        // Generate short ID for local use (Firebase uses push keys)
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
         }
 
-        /* ==========================================================================
+        /* ================================================================
            2. GLOBAL STATE
-           ========================================================================== */
+           ================================================================ */
 
-        let currentUser = null; // Firebase user object
-        let currentCustomerData = null; // Customer data from database
+        let currentUser = null;
+        let currentCustomerData = null;
         let confirmActionCallback = null;
         let customersCache = {};
         let rewardsCache = {};
         let promotionsCache = {};
         let reviewsCache = {};
         let redemptionsCache = {};
-        let pendingReviewImageFile = null; // for review upload
-        let pendingPromoImageFile = null; // for promo upload
+        let pendingReviewImageFile = null;
+        let pendingPromoImageFile = null;
+        let isReviewSubmitting = false;
+        let isPromoSubmitting = false;
+        let activeUploadTask = null; // track current upload for cancellation
 
-        // Listen to Firebase Auth state changes
+        // Auth state - WITH TRY-CATCH ERROR HANDLING
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                // User is signed in
                 currentUser = user;
                 console.log('✅ User logged in:', user.email);
-
-                // Load customer data from database
-                const customers = await getFirebaseData(DB_REFS.customers);
-                customersCache = customers;
-
-                // Find customer by email
-                const customerArray = firebaseObjToArray(customers);
-                const customer = customerArray.find(c => c.email === user.email);
-
-                if (customer) {
-                    currentCustomerData = { id: customer.id, ...customer };
-                    localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
-                    showCustomerDashboard();
-                } else {
-                    // User exists in Auth but not in database - create record
-                    const newId = 'cust-' + generateId();
-                    const newCustomer = {
-                        name: user.displayName || user.email.split('@')[0],
-                        email: user.email,
-                        phone: user.phoneNumber || '',
-                        birthday: '',
-                        points: 10, // Welcome bonus: 10 points
-                        caps: 1, // Welcome bonus: 1 cap
-                        membership: 'Selagi Coffee Artisan Members',
-                        createdAt: new Date().toISOString(),
-                        pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
-                    };
-                    const updateObj = {};
-                    updateObj[newId] = newCustomer;
-                    await updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
-                    currentCustomerData = { id: newId, ...newCustomer };
-                    localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
-                    showToast('🎉 Selamat datang! Anda mendapat 10 point & 1 cap percuma!', 'success');
-                    showCustomerDashboard();
+                try {
+                    const customers = await getFirebaseData(DB_REFS.customers);
+                    customersCache = customers;
+                    const customerArray = firebaseObjToArray(customers);
+                    const customer = customerArray.find(c => c.email === user.email);
+                    if (customer) {
+                        currentCustomerData = { id: customer.id, ...customer };
+                        localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
+                        showCustomerDashboard();
+                    } else {
+                        const newId = 'cust-' + generateId();
+                        const newCustomer = {
+                            name: user.displayName || user.email.split('@')[0],
+                            email: user.email,
+                            phone: user.phoneNumber || '',
+                            birthday: '',
+                            points: 10,
+                            caps: 1,
+                            membership: 'Selagi Coffee Artisan Members',
+                            createdAt: new Date().toISOString(),
+                            pointExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+                        };
+                        const updateObj = {};
+                        updateObj[newId] = newCustomer;
+                        await updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
+                        currentCustomerData = { id: newId, ...newCustomer };
+                        localStorage.setItem('selagi_active_user_v1', JSON.stringify(currentCustomerData));
+                        showToast('🎉 Selamat datang! Anda mendapat 10 point & 1 cap percuma!', 'success');
+                        showCustomerDashboard();
+                    }
+                } catch (error) {
+                    console.error('❌ Gagal membaca data pelanggan:', error);
+                    showToast('Ralat: ' + error.message, 'error');
+                    // Optional: force sign out
+                    // firebase.auth().signOut();
                 }
             } else {
-                // User is signed out
                 currentUser = null;
                 currentCustomerData = null;
                 localStorage.removeItem('selagi_active_user_v1');
@@ -1267,9 +1231,7 @@
         });
 
         window.onload = function() {
-            // Load initial data from Firebase
             loadAllData();
-            // Password strength & matching listeners
             setupPasswordValidation();
         };
 
@@ -1287,7 +1249,6 @@
         }
 
         function seedDefaultData() {
-            // Seed only if Firebase is empty
             Promise.all([
                 getFirebaseData(DB_REFS.customers),
                 getFirebaseData(DB_REFS.rewards),
@@ -1417,30 +1378,27 @@
             }).catch(err => console.warn('Seed data error:', err));
         }
 
-        // Helper to get cached data as array
         function getCachedData(cache) {
             return firebaseObjToArray(cache);
         }
 
-        // Helper to find item in cache by ID
         function findInCache(cache, id) {
             return cache[id] ? { id, ...cache[id] } : null;
         }
 
-        // Helper to update cache and Firebase
         function updateCacheAndFirebase(cache, ref, newData) {
             const updatedCache = { ...cache, ...newData };
             Object.assign(cache, newData);
             return setFirebaseData(ref, updatedCache);
         }
 
-        // Helper to remove from cache and Firebase
         function removeFromCacheAndFirebase(cache, ref, id) {
             const { [id]: removed, ...rest } = cache;
             Object.assign(cache, rest);
             return setFirebaseData(ref, rest);
         }
 
+        // ===== Toast =====
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
@@ -1448,15 +1406,33 @@
             msg.textContent = message;
             if (type === 'success') icon.className = 'fa-solid fa-circle-check text-gold-400 text-xl';
             else if (type === 'error') icon.className = 'fa-solid fa-circle-xmark text-rose-500 text-xl';
-            else icon.className = 'fa-solid fa-circle-info text-coffee-300 text-xl';
+            else if (type === 'info') icon.className = 'fa-solid fa-circle-info text-coffee-300 text-xl';
+            else if (type === 'uploading') {
+                icon.className = 'fa-solid fa-spinner fa-spin text-gold-400 text-xl';
+                document.getElementById('toast-body').classList.add('toast-uploading');
+            } else {
+                icon.className = 'fa-solid fa-circle-check text-gold-400 text-xl';
+            }
             toast.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
-            }, 3000);
+            if (window._toastTimeout) clearTimeout(window._toastTimeout);
+            if (type !== 'uploading') {
+                window._toastTimeout = setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
+                    document.getElementById('toast-body').classList.remove('toast-uploading');
+                }, 4000);
+            }
         }
 
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
+            document.getElementById('toast-body').classList.remove('toast-uploading');
+        }
+
+        // ===== Confirmation Modal =====
         function showConfirmModal(title, description, iconClass, onConfirm) {
             document.getElementById('confirm-modal-title').textContent = title;
             document.getElementById('confirm-modal-desc').textContent = description;
@@ -1465,7 +1441,6 @@
             const modal = document.getElementById('confirm-modal');
             const card = document.getElementById('confirm-modal-card');
             modal.classList.remove('hidden');
-            // Animate in
             setTimeout(() => {
                 card.classList.remove('scale-out');
                 card.classList.add('scale-in');
@@ -1486,12 +1461,10 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // Improved modal open/close with animation
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             const card = modal.querySelector('.modal-card');
             modal.classList.remove('hidden');
-            // Force reflow
             void modal.offsetWidth;
             card.classList.remove('scale-out');
             card.classList.add('scale-in');
@@ -1503,17 +1476,15 @@
             if (card) {
                 card.classList.remove('scale-in');
                 card.classList.add('scale-out');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
+                setTimeout(() => { modal.classList.add('hidden'); }, 300);
             } else {
                 modal.classList.add('hidden');
             }
         }
 
-        /* ==========================================================================
-           3. AUTHENTICATION – Using Firebase Auth (Email + Password)
-           ========================================================================== */
+        /* ================================================================
+           3. AUTHENTICATION
+           ================================================================ */
 
         function toggleAuthMode(mode) {
             const loginBox = document.getElementById('login-box');
@@ -1527,21 +1498,16 @@
             }
         }
 
-        // LOGIN: Email + Password using Firebase Auth
         function handleCustomerLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
-
             if (!email || !password) {
                 showToast('Sila masukkan emel dan kata laluan.', 'error');
                 return;
             }
-
-            // Sign in with Firebase Auth
             firebase.auth().signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Success - onAuthStateChanged will handle navigation
+                .then(() => {
                     showToast('Log masuk berjaya!', 'success');
                 })
                 .catch((error) => {
@@ -1570,7 +1536,6 @@
                 });
         }
 
-        // REGISTER: using Firebase Auth
         function handleCustomerRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
@@ -1584,12 +1549,10 @@
                 showToast('Kata laluan tidak sepadan!', 'error');
                 return;
             }
-
             if (password.length < 6) {
                 showToast('Kata laluan mesti sekurang-kurangnya 6 aksara.', 'error');
                 return;
             }
-
             const customers = getCachedData(customersCache);
             if (customers.some(c => c.phone === phone)) {
                 showToast('No. telefon telah mendaftar. Sila Log Masuk.', 'error');
@@ -1600,31 +1563,24 @@
                 return;
             }
 
-            // Create user with Firebase Auth
             firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    // Update profile with display name
-                    return user.updateProfile({
-                        displayName: name
-                    }).then(() => {
-                        // Now save to database with welcome bonus
+                    return user.updateProfile({ displayName: name }).then(() => {
                         const expiryDate = new Date();
                         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-
                         const newUserId = 'cust-' + generateId();
                         const newCustomer = {
                             name: name,
                             email: email,
                             phone: phone,
                             birthday: birthday,
-                            points: 10, // Welcome bonus 10 points
-                            caps: 1, // Welcome bonus 1 cap
+                            points: 10,
+                            caps: 1,
                             membership: 'Selagi Coffee Artisan Members',
                             createdAt: new Date().toISOString(),
                             pointExpiry: expiryDate.toISOString()
                         };
-
                         const updateObj = {};
                         updateObj[newUserId] = newCustomer;
                         return updateCacheAndFirebase(customersCache, DB_REFS.customers, updateObj);
@@ -1632,7 +1588,6 @@
                 })
                 .then(() => {
                     showToast('🎉 Selamat datang! Anda mendapat 10 point & 1 cap percuma!', 'success');
-                    // onAuthStateChanged will handle the rest
                 })
                 .catch((error) => {
                     let msg = 'Ralat pendaftaran. Sila cuba lagi.';
@@ -1646,7 +1601,6 @@
                 });
         }
 
-        // Forgot Password – Send reset email
         function handleForgotPassword() {
             const email = document.getElementById('login-email').value.trim();
             if (!email) {
@@ -1668,7 +1622,6 @@
                 });
         }
 
-        // Toggle password visibility
         function togglePasswordVisibility(inputId) {
             const input = document.getElementById(inputId);
             const toggle = document.getElementById(inputId + '-toggle');
@@ -1682,7 +1635,6 @@
             }
         }
 
-        // Password strength validation for registration
         function setupPasswordValidation() {
             const passInput = document.getElementById('reg-password');
             const confirmInput = document.getElementById('reg-confirm-password');
@@ -1700,46 +1652,31 @@
                     if (/\d/.test(val)) score++;
                     if (/[^a-zA-Z0-9]/.test(val)) score++;
 
-                    let pct = 0;
-                    let label = 'lemah';
-                    let color = '#ef4444';
-                    if (val.length === 0) {
-                        pct = 0;
-                        label = 'lemah';
+                    let pct = 0,
+                        label = 'lemah',
                         color = '#ef4444';
-                    } else if (score <= 1) {
-                        pct = 20;
+                    if (val.length === 0) { pct = 0;
                         label = 'lemah';
-                        color = '#ef4444';
-                    } else if (score === 2) {
-                        pct = 40;
+                        color = '#ef4444'; } else if (score <= 1) { pct = 20;
+                        label = 'lemah';
+                        color = '#ef4444'; } else if (score === 2) { pct = 40;
                         label = 'sederhana';
-                        color = '#f59e0b';
-                    } else if (score === 3) {
-                        pct = 60;
+                        color = '#f59e0b'; } else if (score === 3) { pct = 60;
                         label = 'baik';
-                        color = '#3b82f6';
-                    } else if (score === 4) {
-                        pct = 80;
+                        color = '#3b82f6'; } else if (score === 4) { pct = 80;
                         label = 'kuat';
-                        color = '#22c55e';
-                    } else {
-                        pct = 100;
+                        color = '#22c55e'; } else { pct = 100;
                         label = 'sangat kuat';
-                        color = '#22c55e';
-                    }
+                        color = '#22c55e'; }
                     strengthBar.style.width = pct + '%';
                     strengthBar.style.background = color;
                     strengthLabel.textContent = label;
                     strengthLabel.style.color = color;
-
-                    // Check confirm match
                     if (confirmInput.value.length > 0) {
                         checkPasswordMatch(passInput.value, confirmInput.value, matchMsg);
                     }
                 });
             }
-
             if (confirmInput) {
                 confirmInput.addEventListener('input', function() {
                     const pass = document.getElementById('reg-password').value;
@@ -1772,7 +1709,6 @@
                 function() {
                     firebase.auth().signOut().then(() => {
                         showToast('Anda telah berjaya log keluar.', 'info');
-                        // onAuthStateChanged will handle the rest
                     });
                 }
             );
@@ -1799,9 +1735,9 @@
             renderAdminDashboard();
         }
 
-        /* ==========================================================================
-           4. CUSTOMER TAB SWITCHING & RENDERING
-           ========================================================================== */
+        /* ================================================================
+           4. CUSTOMER TAB SWITCHING
+           ================================================================ */
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -1824,11 +1760,8 @@
         function refreshCustomerUI() {
             if (!currentCustomerData) {
                 const saved = localStorage.getItem('selagi_active_user_v1');
-                if (saved) {
-                    currentCustomerData = JSON.parse(saved);
-                } else {
-                    return;
-                }
+                if (saved) currentCustomerData = JSON.parse(saved);
+                else return;
             }
             const customers = getCachedData(customersCache);
             const freshUser = customers.find(c => c.id === currentCustomerData.id);
@@ -1904,12 +1837,14 @@
                     `<div class="p-4 text-xs text-gray-500 text-center glass-panel rounded-2xl">Jadilah member pertama memberikan ulasan!</div>`;
                 return;
             }
+            reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             reviews.forEach(r => {
                 const isOwn = r.customerId === currentCustomerData.id;
                 const stars = '⭐'.repeat(r.rating);
                 const div = document.createElement('div');
                 div.className = 'glass-panel p-3.5 rounded-2xl border border-white/5 space-y-1.5 relative';
-                let imageHtml = r.image ? `<img src="${r.image}" class="w-full h-24 object-cover rounded-lg mt-1" onerror="this.style.display='none'" alt="Review image">` : '';
+                let imageHtml = r.image ? `<img src="${r.image}" class="w-full h-24 object-cover rounded-lg mt-1" onerror="this.style.display='none'" alt="Review image">` :
+                    '';
                 div.innerHTML = `
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -2056,6 +1991,7 @@
                     `<div class="p-4 text-xs text-gray-500 text-center glass-panel rounded-2xl">Tiada sejarah penebusan lagi.</div>`;
                 return;
             }
+            redemptions.sort((a, b) => new Date(b.redeemedAt) - new Date(a.redeemedAt));
             redemptions.forEach(red => {
                 const div = document.createElement('div');
                 div.className = 'glass-panel p-3 rounded-2xl border border-white/5 flex items-center justify-between text-xs';
@@ -2073,7 +2009,9 @@
             });
         }
 
-        // ===== REVIEW HANDLERS DENGAN UPLOAD (JPEG/PNG) =====
+        /* ================================================================
+           5. REVIEW HANDLERS – DENGAN UPLOAD SEMUA FORMAT
+           ================================================================ */
 
         function openAddReviewModal() {
             document.getElementById('review-edit-id').value = '';
@@ -2086,7 +2024,16 @@
             document.getElementById('review-image-preview').classList.add('hidden');
             document.getElementById('review-upload-progress').classList.add('hidden');
             document.getElementById('review-upload-progress-bar').style.width = '0%';
+            document.getElementById('review-upload-percent').textContent = '0%';
             pendingReviewImageFile = null;
+            isReviewSubmitting = false;
+            const submitBtn = document.getElementById('review-submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Hantar Ulasan';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
             openModal('review-modal');
         }
 
@@ -2103,6 +2050,7 @@
             document.getElementById('review-image-filename').textContent = rev.image ? 'Gambar sedia ada' : 'Tiada gambar';
             document.getElementById('review-upload-progress').classList.add('hidden');
             document.getElementById('review-upload-progress-bar').style.width = '0%';
+            document.getElementById('review-upload-percent').textContent = '0%';
             if (rev.image) {
                 document.getElementById('review-image-preview-img').src = rev.image;
                 document.getElementById('review-image-preview').classList.remove('hidden');
@@ -2110,28 +2058,27 @@
                 document.getElementById('review-image-preview').classList.add('hidden');
             }
             pendingReviewImageFile = null;
+            isReviewSubmitting = false;
+            const submitBtn = document.getElementById('review-submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Hantar Ulasan';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
             openModal('review-modal');
         }
 
         function handleReviewImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-            // Validate file type (JPEG/PNG)
-            const validTypes = ['image/jpeg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
-                showToast('❌ Sila pilih gambar dalam format JPEG atau PNG sahaja.', 'error');
-                event.target.value = '';
-                return;
-            }
-            // Check file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('❌ Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('❌ Saiz gambar terlalu besar. Maksimum 2MB.', 'error');
                 event.target.value = '';
                 return;
             }
             pendingReviewImageFile = file;
             document.getElementById('review-image-filename').textContent = file.name;
-            // Show preview
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('review-image-preview-img').src = e.target.result;
@@ -2148,90 +2095,149 @@
             document.getElementById('review-image-url').value = '';
             document.getElementById('review-upload-progress').classList.add('hidden');
             document.getElementById('review-upload-progress-bar').style.width = '0%';
+            document.getElementById('review-upload-percent').textContent = '0%';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
         }
 
-        // ===== UPLOAD IMAGE DENGAN TIMEOUT & BETTER ERROR HANDLING =====
-        function uploadImage(file, folder, userId) {
+        /* ================================================================
+           6. UPLOAD IMAGE – DIPERBAIKI DENGAN TIMEOUT 60s, PROGRESS BETTER
+           ================================================================ */
+
+        function uploadImage(file, folder, userId, onProgress) {
             return new Promise((resolve, reject) => {
-                const storageRef = storage.ref();
-                const timestamp = Date.now();
-                const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-                const filename = `${userId}_${timestamp}_${safeName}`;
-                const imageRef = storageRef.child(`${folder}/${filename}`);
-                const uploadTask = imageRef.put(file);
-
-                // Determine which progress bar to use
-                const isReview = folder === 'reviews';
-                const progressContainer = document.getElementById(isReview ? 'review-upload-progress' :
-                    'promo-upload-progress');
-                const progressBar = document.getElementById(isReview ? 'review-upload-progress-bar' :
-                    'promo-upload-progress-bar');
-                progressContainer.classList.remove('hidden');
-                progressBar.style.width = '0%';
-
-                // Timeout: batal selepas 30 saat
-                let timeoutId = setTimeout(() => {
-                    uploadTask.cancel();
-                    progressContainer.classList.add('hidden');
-                    reject(new Error('⏱️ Muat naik mengambil masa terlalu lama (30 saat). Sila cuba dengan gambar yang lebih kecil.'));
-                }, 30000);
-
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        progressBar.style.width = progress + '%';
-                        clearTimeout(timeoutId);
-                        timeoutId = setTimeout(() => {
-                            uploadTask.cancel();
-                            progressContainer.classList.add('hidden');
-                            reject(new Error('⏱️ Muat naik tergantung. Sila cuba dengan gambar yang lebih kecil.'));
-                        }, 30000);
-                    },
-                    (error) => {
-                        clearTimeout(timeoutId);
-                        progressContainer.classList.add('hidden');
-                        console.error('🔥 Upload error:', error);
-                        let msg = 'Gagal muat naik gambar: ';
-                        if (error.code === 'storage/canceled') {
-                            msg += 'Muat naik dibatalkan (mungkin terlalu lama).';
-                        } else if (error.code === 'storage/unauthorized') {
-                            msg += 'Anda tidak dibenarkan. Sila log masuk semula.';
-                        } else if (error.code === 'storage/quota-exceeded') {
-                            msg += 'Storan penuh. Hubungi admin.';
-                        } else if (error.message) {
-                            msg += error.message;
-                        } else {
-                            msg += 'Sila cuba lagi.';
-                        }
-                        reject(new Error(msg));
-                    },
-                    () => {
-                        clearTimeout(timeoutId);
-                        imageRef.getDownloadURL().then((url) => {
-                            progressContainer.classList.add('hidden');
-                            resolve(url);
-                        }).catch((err) => {
-                            progressContainer.classList.add('hidden');
-                            console.error('🔥 Get download URL error:', err);
-                            reject(new Error('Gagal mendapatkan URL gambar: ' + err.message));
-                        });
+                try {
+                    // Reset any existing upload
+                    if (activeUploadTask) {
+                        try { activeUploadTask.cancel(); } catch (e) {}
+                        activeUploadTask = null;
                     }
-                );
+
+                    const storageRef = storage.ref();
+                    const timestamp = Date.now();
+                    const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                    const filename = `${userId}_${timestamp}_${safeName}`;
+                    const imageRef = storageRef.child(`${folder}/${filename}`);
+                    const uploadTask = imageRef.put(file);
+                    activeUploadTask = uploadTask;
+
+                    // Progress elements
+                    const isReview = folder === 'reviews';
+                    const progressContainer = document.getElementById(isReview ? 'review-upload-progress' :
+                        'promo-upload-progress');
+                    const progressBar = document.getElementById(isReview ? 'review-upload-progress-bar' :
+                        'promo-upload-progress-bar');
+                    const percentLabel = document.getElementById(isReview ? 'review-upload-percent' :
+                    'promo-upload-percent');
+
+                    if (progressContainer) progressContainer.classList.remove('hidden');
+                    if (progressBar) progressBar.style.width = '0%';
+                    if (percentLabel) percentLabel.textContent = '0%';
+
+                    let isResolved = false;
+                    let timeoutId = setTimeout(() => {
+                        if (!isResolved) {
+                            try { uploadTask.cancel(); } catch (e) {}
+                            activeUploadTask = null;
+                            if (progressContainer) progressContainer.classList.add('hidden');
+                            reject(new Error('⏱️ Muat naik mengambil masa terlalu lama (60 saat). Sila cuba dengan gambar yang lebih kecil.'));
+                        }
+                    }, 60000);
+
+                    uploadTask.on('state_changed',
+                        (snapshot) => {
+                            if (isResolved) return;
+                            try {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                const pct = Math.min(progress, 100);
+                                if (progressBar) progressBar.style.width = pct + '%';
+                                if (percentLabel) percentLabel.textContent = Math.round(pct) + '%';
+                                if (onProgress) onProgress(pct);
+                                // Reset timeout on progress
+                                clearTimeout(timeoutId);
+                                timeoutId = setTimeout(() => {
+                                    if (!isResolved) {
+                                        try { uploadTask.cancel(); } catch (e) {}
+                                        activeUploadTask = null;
+                                        if (progressContainer) progressContainer.classList.add('hidden');
+                                        reject(new Error('⏱️ Muat naik tergantung. Sila cuba dengan gambar yang lebih kecil.'));
+                                    }
+                                }, 60000);
+                            } catch (err) { /* ignore */ }
+                        },
+                        (error) => {
+                            if (isResolved) return;
+                            isResolved = true;
+                            clearTimeout(timeoutId);
+                            activeUploadTask = null;
+                            if (progressContainer) progressContainer.classList.add('hidden');
+                            console.error('🔥 Upload error:', error);
+                            let msg = 'Gagal muat naik gambar: ';
+                            if (error.code === 'storage/canceled') {
+                                msg += 'Muat naik dibatalkan.';
+                            } else if (error.code === 'storage/unauthorized') {
+                                msg += 'Anda tidak dibenarkan. Sila log masuk semula.';
+                            } else if (error.code === 'storage/quota-exceeded') {
+                                msg += 'Storan penuh. Hubungi admin.';
+                            } else if (error.message) {
+                                msg += error.message;
+                            } else {
+                                msg += 'Sila cuba lagi.';
+                            }
+                            reject(new Error(msg));
+                        },
+                        () => {
+                            if (isResolved) return;
+                            isResolved = true;
+                            clearTimeout(timeoutId);
+                            activeUploadTask = null;
+                            imageRef.getDownloadURL().then((url) => {
+                                if (progressContainer) progressContainer.classList.add('hidden');
+                                if (progressBar) progressBar.style.width = '100%';
+                                if (percentLabel) percentLabel.textContent = '100%';
+                                resolve(url);
+                            }).catch((err) => {
+                                if (progressContainer) progressContainer.classList.add('hidden');
+                                console.error('🔥 Get download URL error:', err);
+                                reject(new Error('Gagal mendapatkan URL gambar: ' + err.message));
+                            });
+                        }
+                    );
+                } catch (err) {
+                    console.error('🔥 Upload init error:', err);
+                    activeUploadTask = null;
+                    reject(new Error('Gagal memulakan muat naik: ' + err.message));
+                }
             });
         }
 
-        // ===== SAVE REVIEW DENGAN BETTER ERROR HANDLING =====
+        /* ================================================================
+           7. SAVE REVIEW – DENGAN UPLOAD HANDLING BETTER
+           ================================================================ */
+
         function handleSaveReview(e) {
             e.preventDefault();
+            if (isReviewSubmitting) {
+                showToast('⏳ Sila tunggu, ulasan sedang diproses...', 'info');
+                return;
+            }
 
             const revId = document.getElementById('review-edit-id').value;
             const comment = document.getElementById('review-comment').value.trim();
             const rating = parseInt(document.getElementById('review-rating').value);
             const existingImageUrl = document.getElementById('review-image-url').value;
 
+            if (!comment) {
+                showToast('Sila tulis ulasan anda.', 'error');
+                return;
+            }
+
             const submitBtn = document.getElementById('review-submit-btn');
+            isReviewSubmitting = true;
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Memuat naik...';
+            submitBtn.textContent = '⏳ Memproses...';
 
             const saveReviewData = (imageUrl) => {
                 let reviews = getCachedData(reviewsCache);
@@ -2239,18 +2245,30 @@
                     const rev = reviews.find(r => r.id === revId);
                     if (rev && rev.customerId === currentCustomerData.id) {
                         const updateObj = {};
-                        updateObj[revId] = { ...rev, comment, rating, image: imageUrl };
-                        updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                            showToast('✅ Ulasan dikemaskini!', 'success');
-                            closeModal('review-modal');
-                            renderHomeReviews();
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Hantar Ulasan';
-                        }).catch(err => {
-                            showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Hantar Ulasan';
-                        });
+                        updateObj[revId] = { ...rev, comment, rating, image: imageUrl || rev.image || '' };
+                        updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj)
+                            .then(() => {
+                                showToast('✅ Ulasan dikemaskini!', 'success');
+                                closeModal('review-modal');
+                                renderHomeReviews();
+                                if (document.getElementById('admin-sec-reviews') && !document.getElementById(
+                                        'admin-sec-reviews').classList.contains('hidden')) {
+                                    renderAdminReviews();
+                                }
+                            })
+                            .catch(err => {
+                                showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
+                            })
+                            .finally(() => {
+                                isReviewSubmitting = false;
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'Hantar Ulasan';
+                            });
+                    } else {
+                        showToast('❌ Ulasan tidak dijumpai atau anda tidak dibenarkan.', 'error');
+                        isReviewSubmitting = false;
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Hantar Ulasan';
                     }
                 } else {
                     const newRevId = 'rev-' + generateId();
@@ -2264,57 +2282,83 @@
                     };
                     const updateObj = {};
                     updateObj[newRevId] = newRev;
-                    updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj).then(() => {
-                        showToast('✅ Terima kasih atas ulasan anda!', 'success');
-                        closeModal('review-modal');
-                        renderHomeReviews();
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Hantar Ulasan';
-                    }).catch(err => {
-                        showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Hantar Ulasan';
-                    });
+                    updateCacheAndFirebase(reviewsCache, DB_REFS.reviews, updateObj)
+                        .then(() => {
+                            showToast('✅ Terima kasih atas ulasan anda!', 'success');
+                            closeModal('review-modal');
+                            renderHomeReviews();
+                            if (document.getElementById('admin-sec-reviews') && !document.getElementById(
+                                    'admin-sec-reviews').classList.contains('hidden')) {
+                                renderAdminReviews();
+                            }
+                        })
+                        .catch(err => {
+                            showToast('❌ Gagal simpan ulasan: ' + err.message, 'error');
+                        })
+                        .finally(() => {
+                            isReviewSubmitting = false;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Hantar Ulasan';
+                        });
                 }
             };
 
+            // Upload jika ada file baru
             if (pendingReviewImageFile) {
-                uploadImage(pendingReviewImageFile, 'reviews', currentCustomerData.id)
-                    .then((url) => {
-                        saveReviewData(url);
-                        pendingReviewImageFile = null;
-                        document.getElementById('review-image-file').value = '';
-                        document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
-                        document.getElementById('review-image-preview').classList.add('hidden');
-                        document.getElementById('review-upload-progress').classList.add('hidden');
-                        document.getElementById('review-upload-progress-bar').style.width = '0%';
-                    })
-                    .catch((error) => {
-                        console.error('Upload error:', error);
-                        showConfirmModal(
-                            '⚠️ Muat Naik Gambar Gagal',
-                            error.message + '\n\nAnda masih boleh menyimpan ulasan tanpa gambar. Teruskan?',
-                            'fa-solid fa-triangle-exclamation text-amber-400',
-                            function() {
-                                saveReviewData(existingImageUrl || '');
-                                pendingReviewImageFile = null;
-                                document.getElementById('review-image-file').value = '';
-                                document.getElementById('review-image-filename').textContent =
-                                'Tiada gambar dipilih';
-                                document.getElementById('review-image-preview').classList.add('hidden');
-                                document.getElementById('review-upload-progress').classList.add('hidden');
-                                document.getElementById('review-upload-progress-bar').style.width = '0%';
-                            }
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Hantar Ulasan';
-                    });
+                showToast('⏳ Memuat naik gambar...', 'uploading');
+                uploadImage(pendingReviewImageFile, 'reviews', currentCustomerData.id, (pct) => {
+                    // Progress update via toast
+                    if (pct < 100) {
+                        document.getElementById('toast-msg').textContent = `⏳ Memuat naik gambar ${Math.round(pct)}%...`;
+                    }
+                })
+                .then((url) => {
+                    hideToast();
+                    saveReviewData(url);
+                    pendingReviewImageFile = null;
+                    document.getElementById('review-image-file').value = '';
+                    document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
+                    document.getElementById('review-image-preview').classList.add('hidden');
+                    document.getElementById('review-upload-progress').classList.add('hidden');
+                    document.getElementById('review-upload-progress-bar').style.width = '0%';
+                    document.getElementById('review-upload-percent').textContent = '0%';
+                })
+                .catch((error) => {
+                    hideToast();
+                    console.error('Upload error:', error);
+                    showConfirmModal(
+                        '⚠️ Muat Naik Gambar Gagal',
+                        error.message + '\n\nAnda masih boleh menyimpan ulasan tanpa gambar. Teruskan?',
+                        'fa-solid fa-triangle-exclamation text-amber-400',
+                        function() {
+                            saveReviewData(existingImageUrl || '');
+                            pendingReviewImageFile = null;
+                            document.getElementById('review-image-file').value = '';
+                            document.getElementById('review-image-filename').textContent = 'Tiada gambar dipilih';
+                            document.getElementById('review-image-preview').classList.add('hidden');
+                            document.getElementById('review-upload-progress').classList.add('hidden');
+                            document.getElementById('review-upload-progress-bar').style.width = '0%';
+                            document.getElementById('review-upload-percent').textContent = '0%';
+                        }
+                    );
+                    // If user dismisses modal without continuing, re-enable
+                    setTimeout(() => {
+                        const confirmModal = document.getElementById('confirm-modal');
+                        if (confirmModal.classList.contains('hidden') && isReviewSubmitting) {
+                            isReviewSubmitting = false;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Hantar Ulasan';
+                        }
+                    }, 500);
+                });
             } else {
                 saveReviewData(existingImageUrl || '');
             }
         }
 
-        // ===== PROMOTION IMAGE HANDLERS (JPEG/PNG) =====
+        /* ================================================================
+           8. PROMOTION HANDLERS – DENGAN UPLOAD SEMUA FORMAT
+           ================================================================ */
 
         function openAddPromoModal() {
             document.getElementById('promo-edit-id').value = '';
@@ -2327,11 +2371,20 @@
             document.getElementById('promo-image-preview').classList.add('hidden');
             document.getElementById('promo-upload-progress').classList.add('hidden');
             document.getElementById('promo-upload-progress-bar').style.width = '0%';
+            document.getElementById('promo-upload-percent').textContent = '0%';
             document.getElementById('p-start').value = new Date().toISOString().split('T')[0];
             document.getElementById('p-end').value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
                 .split('T')[0];
             document.getElementById('p-active').checked = true;
             pendingPromoImageFile = null;
+            isPromoSubmitting = false;
+            const submitBtn = document.getElementById('promo-submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Simpan';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
             openModal('promo-modal');
         }
 
@@ -2348,6 +2401,7 @@
             document.getElementById('promo-image-filename').textContent = p.image ? 'Gambar sedia ada' : 'Tiada gambar';
             document.getElementById('promo-upload-progress').classList.add('hidden');
             document.getElementById('promo-upload-progress-bar').style.width = '0%';
+            document.getElementById('promo-upload-percent').textContent = '0%';
             if (p.image) {
                 document.getElementById('promo-image-preview-img').src = p.image;
                 document.getElementById('promo-image-preview').classList.remove('hidden');
@@ -2358,20 +2412,20 @@
             document.getElementById('p-end').value = p.endDate;
             document.getElementById('p-active').checked = p.active;
             pendingPromoImageFile = null;
+            isPromoSubmitting = false;
+            const submitBtn = document.getElementById('promo-submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Simpan';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
             openModal('promo-modal');
         }
 
         function handlePromoImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-            // Validate file type (JPEG/PNG)
-            const validTypes = ['image/jpeg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
-                showToast('❌ Sila pilih gambar dalam format JPEG atau PNG sahaja.', 'error');
-                event.target.value = '';
-                return;
-            }
-            // Check file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 showToast('❌ Saiz gambar terlalu besar. Maksimum 5MB.', 'error');
                 event.target.value = '';
@@ -2379,7 +2433,6 @@
             }
             pendingPromoImageFile = file;
             document.getElementById('promo-image-filename').textContent = file.name;
-            // Show preview
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('promo-image-preview-img').src = e.target.result;
@@ -2396,12 +2449,24 @@
             document.getElementById('promo-image-url').value = '';
             document.getElementById('promo-upload-progress').classList.add('hidden');
             document.getElementById('promo-upload-progress-bar').style.width = '0%';
+            document.getElementById('promo-upload-percent').textContent = '0%';
+            if (activeUploadTask) {
+                try { activeUploadTask.cancel(); } catch (e) {}
+                activeUploadTask = null;
+            }
         }
 
-        // ===== SAVE PROMOTION DENGAN UPLOAD GAMBAR =====
+        /* ================================================================
+           9. SAVE PROMOTION – DENGAN UPLOAD HANDLING BETTER
+           ================================================================ */
 
         function handleSavePromo(e) {
             e.preventDefault();
+            if (isPromoSubmitting) {
+                showToast('⏳ Sila tunggu, promosi sedang diproses...', 'info');
+                return;
+            }
+
             const id = document.getElementById('promo-edit-id').value;
             const title = document.getElementById('p-title').value.trim();
             const desc = document.getElementById('p-desc').value.trim();
@@ -2410,7 +2475,13 @@
             const active = document.getElementById('p-active').checked;
             const existingImageUrl = document.getElementById('promo-image-url').value;
 
+            if (!title || !desc || !startDate || !endDate) {
+                showToast('Sila lengkapkan semua maklumat promosi.', 'error');
+                return;
+            }
+
             const submitBtn = document.getElementById('promo-submit-btn');
+            isPromoSubmitting = true;
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ Memuat naik...';
 
@@ -2419,72 +2490,96 @@
                 if (id) {
                     const updateObj = {};
                     updateObj[id] = { title, description: desc, image: finalImage, startDate, endDate, active };
-                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
-                        showToast('✅ Promosi disimpan!', 'success');
-                        closeModal('promo-modal');
-                        renderAdminPromotions();
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Simpan';
-                    }).catch(err => {
-                        showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Simpan';
-                    });
+                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj)
+                        .then(() => {
+                            showToast('✅ Promosi disimpan!', 'success');
+                            closeModal('promo-modal');
+                            renderAdminPromotions();
+                            renderHomeTab();
+                        })
+                        .catch(err => {
+                            showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
+                        })
+                        .finally(() => {
+                            isPromoSubmitting = false;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Simpan';
+                        });
                 } else {
                     const newId = 'promo-' + generateId();
                     const updateObj = {};
                     updateObj[newId] = { title, description: desc, image: finalImage, startDate, endDate, active };
-                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj).then(() => {
-                        showToast('✅ Promosi disimpan!', 'success');
-                        closeModal('promo-modal');
-                        renderAdminPromotions();
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Simpan';
-                    }).catch(err => {
-                        showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Simpan';
-                    });
+                    updateCacheAndFirebase(promotionsCache, DB_REFS.promotions, updateObj)
+                        .then(() => {
+                            showToast('✅ Promosi disimpan!', 'success');
+                            closeModal('promo-modal');
+                            renderAdminPromotions();
+                            renderHomeTab();
+                        })
+                        .catch(err => {
+                            showToast('❌ Gagal simpan promosi: ' + err.message, 'error');
+                        })
+                        .finally(() => {
+                            isPromoSubmitting = false;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Simpan';
+                        });
                 }
             };
 
             if (pendingPromoImageFile) {
-                uploadImage(pendingPromoImageFile, 'promotions', 'admin')
-                    .then((url) => {
-                        savePromoData(url);
-                        pendingPromoImageFile = null;
-                        document.getElementById('promo-image-file').value = '';
-                        document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
-                        document.getElementById('promo-image-preview').classList.add('hidden');
-                        document.getElementById('promo-upload-progress').classList.add('hidden');
-                        document.getElementById('promo-upload-progress-bar').style.width = '0%';
-                    })
-                    .catch((error) => {
-                        console.error('Promo upload error:', error);
-                        showConfirmModal(
-                            '⚠️ Muat Naik Gambar Promosi Gagal',
-                            error.message + '\n\nAnda masih boleh menyimpan promosi tanpa gambar. Teruskan?',
-                            'fa-solid fa-triangle-exclamation text-amber-400',
-                            function() {
-                                savePromoData(existingImageUrl || '');
-                                pendingPromoImageFile = null;
-                                document.getElementById('promo-image-file').value = '';
-                                document.getElementById('promo-image-filename').textContent =
-                                'Tiada gambar dipilih';
-                                document.getElementById('promo-image-preview').classList.add('hidden');
-                                document.getElementById('promo-upload-progress').classList.add('hidden');
-                                document.getElementById('promo-upload-progress-bar').style.width = '0%';
-                            }
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Simpan';
-                    });
+                showToast('⏳ Memuat naik gambar promosi...', 'uploading');
+                uploadImage(pendingPromoImageFile, 'promotions', 'admin', (pct) => {
+                    if (pct < 100) {
+                        document.getElementById('toast-msg').textContent = `⏳ Memuat naik gambar ${Math.round(pct)}%...`;
+                    }
+                })
+                .then((url) => {
+                    hideToast();
+                    savePromoData(url);
+                    pendingPromoImageFile = null;
+                    document.getElementById('promo-image-file').value = '';
+                    document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
+                    document.getElementById('promo-image-preview').classList.add('hidden');
+                    document.getElementById('promo-upload-progress').classList.add('hidden');
+                    document.getElementById('promo-upload-progress-bar').style.width = '0%';
+                    document.getElementById('promo-upload-percent').textContent = '0%';
+                })
+                .catch((error) => {
+                    hideToast();
+                    console.error('Promo upload error:', error);
+                    showConfirmModal(
+                        '⚠️ Muat Naik Gambar Promosi Gagal',
+                        error.message + '\n\nAnda masih boleh menyimpan promosi tanpa gambar. Teruskan?',
+                        'fa-solid fa-triangle-exclamation text-amber-400',
+                        function() {
+                            savePromoData(existingImageUrl || '');
+                            pendingPromoImageFile = null;
+                            document.getElementById('promo-image-file').value = '';
+                            document.getElementById('promo-image-filename').textContent = 'Tiada gambar dipilih';
+                            document.getElementById('promo-image-preview').classList.add('hidden');
+                            document.getElementById('promo-upload-progress').classList.add('hidden');
+                            document.getElementById('promo-upload-progress-bar').style.width = '0%';
+                            document.getElementById('promo-upload-percent').textContent = '0%';
+                        }
+                    );
+                    setTimeout(() => {
+                        const confirmModal = document.getElementById('confirm-modal');
+                        if (confirmModal.classList.contains('hidden') && isPromoSubmitting) {
+                            isPromoSubmitting = false;
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Simpan';
+                        }
+                    }, 500);
+                });
             } else {
                 savePromoData(existingImageUrl || '');
             }
         }
 
-        // ===== PROFILE EDIT =====
+        /* ================================================================
+           10. PROFILE EDIT
+           ================================================================ */
 
         function openEditProfileModal() {
             document.getElementById('edit-prof-name').value = currentCustomerData.name;
@@ -2511,15 +2606,13 @@
                     showToast('Profil berjaya dikemaskini!', 'success');
                     closeModal('edit-profile-modal');
                     renderProfileTab();
+                    refreshCustomerUI();
                 });
             }
-
             if (currentUser && name) {
-                currentUser.updateProfile({
-                    displayName: name
-                }).catch(err => console.warn('Could not update display name:', err));
+                currentUser.updateProfile({ displayName: name }).catch(err => console.warn('Could not update display name:',
+                err));
             }
-
             if (newPass && currentUser) {
                 currentUser.updatePassword(newPass)
                     .then(() => showToast('Kata laluan dikemaskini!', 'success'))
@@ -2527,13 +2620,11 @@
             }
         }
 
-        /* ==========================================================================
-           5. STAFF / ADMIN DASHBOARD & REDEEM FUNCTIONS
-           ========================================================================== */
+        /* ================================================================
+           11. STAFF / ADMIN DASHBOARD & REDEEM
+           ================================================================ */
 
-        // Redeem FAB handler
         function handleRedeemFabClick() {
-            // Reset the modal to step 1
             document.getElementById('redeem-step-pin').classList.remove('hidden');
             document.getElementById('redeem-step-action').classList.add('hidden');
             document.getElementById('redeem-pin-input').value = '';
@@ -2542,13 +2633,11 @@
             openModal('redeem-modal');
         }
 
-        // Handle PIN submission for redeem
         function handleRedeemPin(e) {
             e.preventDefault();
             const pin = document.getElementById('redeem-pin-input').value.trim();
             const validPins = ['9899', '991414', '2024', '2407'];
             if (validPins.includes(pin)) {
-                // PIN valid, show action step
                 document.getElementById('redeem-step-pin').classList.add('hidden');
                 document.getElementById('redeem-step-action').classList.remove('hidden');
                 showToast('PIN sah! Anda boleh tambah point/cap.', 'success');
@@ -2559,7 +2648,6 @@
             }
         }
 
-        // Add points function
         function addRedeemPoints() {
             if (!currentCustomerData) {
                 showToast('Tiada pelanggan aktif.', 'error');
@@ -2580,13 +2668,11 @@
                     currentCustomerData = { id: currentCustomerData.id, ...cust };
                     refreshCustomerUI();
                     showToast(`✅ ${pointsToAdd} point berjaya ditambah!`, 'success');
-                    // Optionally close modal after a delay
                     setTimeout(() => closeModal('redeem-modal'), 1500);
                 });
             }
         }
 
-        // Add caps function
         function addRedeemCaps() {
             if (!currentCustomerData) {
                 showToast('Tiada pelanggan aktif.', 'error');
@@ -2619,15 +2705,11 @@
             }
         }
 
-        // Existing staff login modal (for admin)
+        // Staff login
         function showStaffLoginModal() {
             document.getElementById('staff-id').value = '';
             document.getElementById('staff-password').value = '';
             openModal('staff-login-modal');
-        }
-
-        function closeStaffModal() {
-            closeModal('staff-login-modal');
         }
 
         function handleStaffLogin(e) {
@@ -2679,7 +2761,7 @@
             switchAdminTab('customers');
         }
 
-        // ---- Admin Customers ----
+        /* ---- Admin Customers ---- */
         function renderAdminCustomers() {
             const query = (document.getElementById('admin-search-customer').value || '').toLowerCase();
             const customers = getCachedData(customersCache).filter(c =>
@@ -2814,7 +2896,7 @@
             showToast('Cap telah di-reset kepada 0 pada borang.', 'info');
         }
 
-        // ---- Admin Rewards ----
+        /* ---- Admin Rewards ---- */
         function renderAdminRewards() {
             const rewards = getCachedData(rewardsCache);
             const container = document.getElementById('admin-rewards-grid');
@@ -2909,7 +2991,7 @@
             );
         }
 
-        // ---- Admin Promotions ----
+        /* ---- Admin Promotions ---- */
         function renderAdminPromotions() {
             const promos = getCachedData(promotionsCache);
             const container = document.getElementById('admin-promos-grid');
@@ -2949,16 +3031,18 @@
             );
         }
 
-        // ---- Admin Reviews ----
+        /* ---- Admin Reviews ---- */
         function renderAdminReviews() {
             const reviews = getCachedData(reviewsCache);
             const container = document.getElementById('admin-reviews-list');
             container.innerHTML = '';
+            reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             reviews.forEach(r => {
                 const div = document.createElement('div');
                 div.className =
                     'bg-charcoal-900 rounded-2xl p-4 border border-gray-800 space-y-2 flex items-center justify-between';
-                let imageHtml = r.image ? `<img src="${r.image}" class="w-12 h-12 rounded-lg object-cover" onerror="this.style.display='none'" alt="Review image">` : '';
+                let imageHtml = r.image ? `<img src="${r.image}" class="w-12 h-12 rounded-lg object-cover" onerror="this.style.display='none'" alt="Review image">` :
+                    '';
                 div.innerHTML = `
                             <div class="space-y-1 flex-1">
                                 <div class="flex items-center gap-2">
@@ -2984,11 +3068,14 @@
                     removeFromCacheAndFirebase(reviewsCache, DB_REFS.reviews, revId).then(() => {
                         showToast('Ulasan dipadam oleh admin.', 'info');
                         renderAdminReviews();
+                        renderHomeReviews();
                     });
                 }
             );
         }
-    </script>
 
+        // Ensure the auth view is shown initially
+        showAuthView();
+    </script>
 </body>
 </html>
